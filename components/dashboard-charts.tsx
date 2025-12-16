@@ -119,7 +119,7 @@ export function DashboardCharts() {
                 paddingAngle={5}
                 dataKey="value"
                 label={(entry) => `${entry.name}: ${entry.value}`}
-                labelStyle={{ fill: "#fff", fontSize: "12px" }}
+                // labelStyle={{ fill: "#fff", fontSize: "12px" }}
               >
                 {userActivityData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
