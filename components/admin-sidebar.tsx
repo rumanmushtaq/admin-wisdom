@@ -18,10 +18,13 @@ import {
   Zap,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import AdminSidebarFooter from "@/components/molecules/sidebar/footer"
+
 
 const navItems = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/admin/users", icon: Users, label: "Users" },
+  { href: "/admin/packages", icon: Settings, label: "Packages" },
   { href: "/admin/deposits", icon: ArrowDownCircle, label: "Deposits" },
   { href: "/admin/withdrawals", icon: ArrowUpCircle, label: "Withdrawals" },
   { href: "/admin/tasks", icon: ClipboardCheck, label: "Tasks" },
@@ -32,8 +35,9 @@ const navItems = [
 
 export function AdminSidebar() {
   const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState<boolean>(false)
 
+  
   return (
     <>
       {/* Mobile menu button */}
@@ -84,17 +88,7 @@ export function AdminSidebar() {
           </nav>
 
           {/* Footer */}
-          <div className="border-t neon-border p-4">
-            <div className="flex items-center gap-3 rounded-lg bg-secondary px-3 py-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-                <span className="text-xs font-bold text-primary-foreground">A</span>
-              </div>
-              <div className="flex-1 text-sm">
-                <p className="font-medium">Admin User</p>
-                <p className="text-xs text-muted-foreground">admin@crypto.com</p>
-              </div>
-            </div>
-          </div>
+            <AdminSidebarFooter />
         </div>
       </aside>
 

@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Eye, EyeOff, Lock, Mail } from "lucide-react"
+import { Eye, EyeOff, Loader, Lock, Mail } from "lucide-react"
 import { Controller } from "react-hook-form"
 import useLogin from "./useLogin"
 
@@ -139,10 +139,10 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full neon-glow"
+              className="w-full neon-glow cursor-pointer"
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+               <Loader />{isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
         </CardContent>

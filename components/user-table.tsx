@@ -166,11 +166,7 @@ export function UserTable() {
         },
       },
 
-      {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ getValue }) => <Badge>{getValue() as string}</Badge>,
-      },
+       
       {
         header: "Actions",
         cell: ({ row }) => {

@@ -18,24 +18,24 @@ import {
   useApproveDeposit,
   useRejectDeposit,
 } from "@/views/deposit/useDeposit";
+import { WithdrawalStatus, Withdraws } from "@/types/withdraws.types";
 
 interface TransactionCardProps {
-  deposit: Deposit;
-  walletAddress?: string;
+  withdrawal: Withdraws;
 }
 
-export function TransactionCard({ deposit }: TransactionCardProps) {
+export function TransactionCard({ withdrawal }: TransactionCardProps) {
   const {
     user,
     amount,
-    type,
-    transactionId,
-    image,
-    status,
-    balancebefore,
-    createdAt,
+ 
+    // transactionId,
+    // image,
+    // status,
+    // balancebefore,
+    // createdAt,
     _id,
-  } = deposit;
+  } = withdrawal;
 
   const approveMutation = useApproveDeposit();
   const rejectMutation = useRejectDeposit();
@@ -61,14 +61,14 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
             </div>
             <Badge
               variant={
-                status === "approved"
+                status === WithdrawalStatus.APPROVED
                   ? "default"
-                  : status === "pending"
+                  : status === WithdrawalStatus.PENDING
                   ? "secondary"
                   : "destructive"
               }
               className={
-                status === "approved"
+                status === WithdrawalStatus.APPROVED
                   ? "bg-primary text-primary-foreground"
                   : ""
               }
@@ -87,7 +87,7 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
               <span className="text-sm text-muted-foreground">
                 Transaction ID
               </span>
-              <span className="text-sm font-mono">{transactionId}</span>
+              {/* <span className="text-sm font-mono">{transactionId}</span> */}
             </div>
             {/* {walletAddress && (
               <div className="flex justify-between">
@@ -101,12 +101,12 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
             )} */}
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Time</span>
-              <span className="text-sm">{createdAt}</span>
+              {/* <span className="text-sm">{createdAt}</span> */}
             </div>
           </div>
 
           {/* Screenshot */}
-          {image && (
+          {/* {image && ( */}
             <Dialog>
               <DialogTrigger asChild>
                 <Button
@@ -123,18 +123,18 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
                   <DialogTitle>Transaction Screenshot</DialogTitle>
                 </DialogHeader>
                 <div className="mt-4">
-                  <img
+                  {/* <img
                     src={image || "/placeholder.svg"}
                     alt="Transaction screenshot"
                     className="w-full rounded-lg border neon-border"
-                  />
+                  /> */}
                 </div>
               </DialogContent>
             </Dialog>
-          )}
+          {/* )} */}
 
           {/* Actions */}
-          {status === ShareStatus.PENDING && (
+          {status === WithdrawalStatus.PENDING && (
             <div className="flex gap-2">
               <Button
                 className="flex-1 neon-glow cursor-pointer"
