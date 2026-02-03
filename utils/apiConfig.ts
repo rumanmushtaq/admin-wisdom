@@ -25,7 +25,10 @@ const apiEndpoints = {
     REJECCT: (id: string) => `/api/v1/transactions/reject/${id}`,
   },
   Settings : {
+
     UPDATE_BINANCE : `/api/v1/settings/binance`,
+    UPDATE: `/api/v1/settings`,
+    ALL : `/api/v1/settings`,
   }
 };
 

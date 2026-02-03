@@ -10,7 +10,7 @@ class SettingsService {
     try {
       const res = await HTTP_CLIENT.put(
         apiEndpoints.Settings.UPDATE_BINANCE,
-        payload
+        payload,
       );
 
       return {
@@ -24,6 +24,32 @@ class SettingsService {
       };
     }
   }
+
+  async getSettings() {
+    try {
+      const {data} = await HTTP_CLIENT.get(apiEndpoints.Settings.ALL);
+      return data.data;
+    } catch (error: any) {
+      return error.response?.data || error.message;
+    }
+  }
+
+  async updateReferralSetting(
+    payload: Partial<any>,
+
+  ): Promise<ApiResponse<any>> {
+    try {
+      const res = await HTTP_CLIENT.put(
+        apiEndpoints.Settings.UPDATE,
+        payload,
+      );
+
+      return res.data;
+    } catch (error: any) {
+      return error.response?.data || error.message;
+    }
+  }
+
   async getBinance() {
     try {
       const res = await HTTP_CLIENT.get(apiEndpoints.Settings.UPDATE_BINANCE);
