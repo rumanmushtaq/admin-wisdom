@@ -15,13 +15,15 @@ import { Separator } from "@/components/ui/separator";
 import PasswordChangeSecurity from "@/components/molecules/setting/security";
 import useSettings from "./useSettings";
 import ReferralSetting from "@/components/molecules/setting/referral";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import TierSetting from "@/components/molecules/setting/tier";
+import TierSettingTable from "@/components/organisms/settings/tier";
 
 export default function SettingsPage() {
+  const [form, setForm] = useState<boolean>(false);
   const { settings, settingsStatus, settingsRefetch, settingsIsPending } =
     useSettings();
 
-   
   const memoizedSettings = useMemo(() => settings, [settings]);
   return (
     <div className="flex min-h-screen">
@@ -90,7 +92,21 @@ export default function SettingsPage() {
             </Card>
 
             {/* Referral Settings */}
-          {memoizedSettings &&  <ReferralSetting settings={memoizedSettings} />}
+            {memoizedSettings && (
+              <ReferralSetting settings={memoizedSettings} />
+            )}
+
+            <div className="flex justify-between w-full items-center">
+              <p className="text-muted-foreground">Commission Tier</p>
+              <Button
+                type="button"
+                onClick={() => setForm(true)}
+                className="cursor-pointer"
+              >
+                Create Tier
+              </Button>
+            </div>
+            <TierSettingTable form={form} setForm={setForm} />
 
             {/* Notification Settings */}
             <Card className="neon-border">

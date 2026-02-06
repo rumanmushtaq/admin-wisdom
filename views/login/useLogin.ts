@@ -10,7 +10,6 @@ import { LoginFormValues } from "./types";
 const useLogin = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const {
     control,
@@ -55,7 +54,7 @@ const useLogin = () => {
     handleSubmit,
     onSubmit,
     errors,
-    isLoading,
+    isPending,
     showPassword,
     setShowPassword,
   };
