@@ -19,6 +19,7 @@ class PackagesService {
       limit: number;
     }>
   > {
+    console.log("params", params);
     try {
       const res = await HTTP_CLIENT.get(apiEndpoints.Packages.GET_ALL, {
         params: {

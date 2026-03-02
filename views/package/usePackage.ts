@@ -13,6 +13,8 @@ import packagesService from "@/services/package";
 export const usePackages = (params: GetPackagesParams) => {
   const { page = 1, limit = 10, sortBy, sortOrder, search, isActive } = params;
 
+
+  console.log("params", params);
   const {
     data,
     status: packageStatus,
@@ -27,6 +29,7 @@ export const usePackages = (params: GetPackagesParams) => {
         sortBy,
         sortOrder,
         search,
+        isActive
       }),
     staleTime: 5000,
   });
@@ -122,7 +125,7 @@ export const useDeletePackage = () => {
     mutationFn: (id: string) => packagesService.deletePackage(id),
     onSuccess: (_, deletedId) => {
       // Update packages list in cache
-      queryClient.setQueryData<any>(["packages"], (oldData:any) => {
+      queryClient.setQueriesData<any>({ queryKey: ["packages"] }, (oldData:any) => {
         if (!oldData) return oldData;
 
         return {
@@ -130,7 +133,7 @@ export const useDeletePackage = () => {
           data: {
             ...oldData?.data,
             data: oldData?.data?.data?.filter(
-              (pkg: any) => pkg.id !== deletedId
+              (pkg: any) => pkg.id !== deletedId && pkg._id !== deletedId
             ),
             total: oldData.data.total - 1, // optional: update total
           },

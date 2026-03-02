@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useDebounce } from "use-debounce";
 import {
   flexRender,
   getCoreRowModel,
@@ -40,7 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Package } from "@/types/package.types";
-import { usePackages } from "@/views/package/usePackage";
+import { useDeletePackage, usePackages } from "@/views/package/usePackage";
 
 interface PackagesDataTableProps {
   setIsModalOpen: (a: boolean) => void;
@@ -58,7 +59,8 @@ export function PackagesDataTable({
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
-  const [isActive, setIsActive] = useState<string | undefined>();
+  const [debouncedSearch] = useDebounce(search, 500);
+  const [isActive, setIsActive] = useState<string>("all");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
@@ -68,14 +70,14 @@ export function PackagesDataTable({
   const { data, packageIsPending } = usePackages({
     page,
     limit,
-    search: search || undefined,
-    isActive,
+    search: debouncedSearch || undefined,
+    isActive: isActive === "all" ? undefined : isActive,
     sortBy,
     sortOrder,
   });
 
   console.log("data", data);
-  const packages = data?.data?.data ?? [];
+  const packages = useMemo(() => data?.data?.data ?? [], [data?.data?.data]);
   // const totalPages = data?.data?.pagination?.totalPages ?? 1;
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -90,139 +92,155 @@ export function PackagesDataTable({
     setEditingPackageId(id);
   };
 
-  const columns: ColumnDef<Package>[] = [
-    {
-      accessorKey: "displayOrder",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:text-[#BFFF00]"
-          >
-            Order
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-    {
-      accessorKey: "name",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:text-[#BFFF00]"
-          >
-            Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-    {
-      accessorKey: "credits",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:text-[#BFFF00]"
-          >
-            Credits
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => {
-        return (
-          <span className="text-[#BFFF00] font-semibold">
-            {row.getValue("credits")}
-          </span>
-        );
-      },
-    },
-    {
-      accessorKey: "price",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:text-[#BFFF00]"
-          >
-            Price
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => {
-        const price = Number.parseFloat(row.getValue("price"));
-        return <span className="font-semibold">${price.toFixed(2)}</span>;
-      },
-    },
-    {
-      accessorKey: "description",
-      header: "Description",
-      cell: ({ row }) => {
-        const description = row.getValue("description") as string;
-        return (
-          <span className="text-muted-foreground truncate max-w-xs block">
-            {description}
-          </span>
-        );
-      },
-    },
-    {
-      accessorKey: "isActive",
-      header: "Status",
-      cell: ({ row }) => {
-        const isActive = row.getValue("isActive") as boolean;
-        return (
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-semibold ${
-              isActive
-                ? "bg-[#BFFF00]/20 text-[#BFFF00]"
-                : "bg-gray-500/20 text-gray-400"
-            }`}
-          >
-            {isActive ? "Active" : "Inactive"}
-          </span>
-        );
-      },
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        return (
-          <div className="flex gap-2">
+  const deleteMutation = useDeletePackage();
+
+  const columns = useMemo<ColumnDef<Package>[]>(
+    () => [
+      {
+        accessorKey: "displayOrder",
+        header: ({ column }) => {
+          return (
             <Button
               variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:text-[#BFFF00]"
-              onClick={() => {
-                if (row?.original?._id) {
-                  handleToEdit(row?.original?._id);
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              className="hover:text-[#BFFF00]"
+            >
+              Order
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+      },
+      {
+        accessorKey: "name",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              className="hover:text-[#BFFF00]"
+            >
+              Name
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+      },
+      {
+        accessorKey: "credits",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              className="hover:text-[#BFFF00]"
+            >
+              Credits
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+        cell: ({ row }) => {
+          return (
+            <span className="text-[#BFFF00] font-semibold">
+              {row.getValue("credits")}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "price",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              className="hover:text-[#BFFF00]"
+            >
+              Price
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+        cell: ({ row }) => {
+          const price = Number.parseFloat(row.getValue("price"));
+          return <span className="font-semibold">${price.toFixed(2)}</span>;
+        },
+      },
+      {
+        accessorKey: "description",
+        header: "Description",
+        cell: ({ row }) => {
+          const description = row.getValue("description") as string;
+          return (
+            <span className="text-muted-foreground truncate max-w-xs block">
+              {description}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "isActive",
+        header: "Status",
+        cell: ({ row }) => {
+          const isActive = row.getValue("isActive") as boolean;
+          return (
+            <span
+              className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                isActive
+                  ? "bg-[#BFFF00]/20 text-[#BFFF00]"
+                  : "bg-gray-500/20 text-gray-400"
+              }`}
+            >
+              {isActive ? "Active" : "Inactive"}
+            </span>
+          );
+        },
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+          return (
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:text-[#BFFF00]"
+                onClick={() => {
+                  if (row?.original?._id) {
+                    handleToEdit(row?.original?._id);
+                  }
+                }}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:text-red-500"
+                onClick={() =>
+                  row?.original?._id &&
+                  deleteMutation.mutate(row?.original?._id)
                 }
-              }}
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:text-red-500"
-              // onClick={() => onDelete(row.original.id)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        );
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          );
+        },
       },
-    },
-  ];
+    ],
+    [deleteMutation],
+  );
 
   const table = useReactTable({
     data: packages,
@@ -250,14 +268,7 @@ export function PackagesDataTable({
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm neon-border bg-black/30"
         />
-        <Select
-          value={isActive ?? "all"}
-          onValueChange={(value) =>
-            setIsActive(
-              value === "all" ? undefined : value === "true" ? "true" : "false"
-            )
-          }
-        >
+        <Select value={isActive} onValueChange={setIsActive}>
           <SelectTrigger className="w-[180px] neon-border bg-black/30">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
@@ -297,7 +308,7 @@ export function PackagesDataTable({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -317,7 +328,7 @@ export function PackagesDataTable({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -348,7 +359,7 @@ export function PackagesDataTable({
             {Math.min(
               (table.getState().pagination.pageIndex + 1) *
                 table.getState().pagination.pageSize,
-              table.getFilteredRowModel().rows.length
+              table.getFilteredRowModel().rows.length,
             )}{" "}
             of {table.getFilteredRowModel().rows.length} entries
           </div>

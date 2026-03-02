@@ -39,9 +39,7 @@ export function PackageModal({
   });
 
   const { mutate: createPackage, isPending: isCreating } = useCreatePackage();
-
   const { mutate: updatePackage, isPending: isUpdating } = useUpdatePackage();
-
   const { data: packageData, isPending } = useGetAPackage(editPackage);
   // 🔁 Sync fetched data → form
   useEffect(() => {
@@ -206,11 +204,11 @@ export function PackageModal({
           </div>
 
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} disabled={isCreating || isUpdating}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-[#BFFF00] text-black">
-              {editPackage ? "Update" : "Create"}
+            <Button type="submit" className="bg-[#BFFF00] text-black" disabled={isCreating || isUpdating}>
+              {editPackage ? (isUpdating ? "Updating..." : "Update") : (isCreating ? "Creating..." : "Create")}
             </Button>
           </div>
         </form>

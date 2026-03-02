@@ -28,7 +28,6 @@ export default function PackagesPage() {
   ========================== */
   const createMutation = useCreatePackage();
   const updateMutation = useUpdatePackage();
-  const deleteMutation = useDeletePackage();
 
   /* =========================
      HANDLERS
@@ -65,7 +64,7 @@ export default function PackagesPage() {
             setIsModalOpen(false);
             setEditingPackageId(null);
           },
-        }
+        },
       );
     } else {
       createMutation.mutate(data, {
@@ -80,7 +79,7 @@ export default function PackagesPage() {
   return (
     // <div className="min-h-screen bg-background p-8 lg:ml-64">
     //   <div className=" max-w-7xl">
-    <main className="flex-1 lg:ml-64">
+    <main className="flex-1 w-full lg:ml-64 bg-black">
       <div className="p-6 lg:p-8">
         {/* HEADER */}
         <div className="mb-8 flex items-center justify-between">

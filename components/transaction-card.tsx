@@ -64,8 +64,8 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
                 status === "approved"
                   ? "default"
                   : status === "pending"
-                  ? "secondary"
-                  : "destructive"
+                    ? "secondary"
+                    : "destructive"
               }
               className={
                 status === "approved"
@@ -107,30 +107,21 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
 
           {/* Screenshot */}
           {image && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full neon-border bg-transparent"
-                >
-                  <Eye className="mr-2 h-4 w-4" />
-                  View Screenshot
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-3xl neon-border">
-                <DialogHeader>
-                  <DialogTitle>Transaction Screenshot</DialogTitle>
-                </DialogHeader>
-                <div className="mt-4">
-                  <img
-                    src={image || "/placeholder.svg"}
-                    alt="Transaction screenshot"
-                    className="w-full rounded-lg border neon-border"
-                  />
-                </div>
-              </DialogContent>
-            </Dialog>
+            <a
+              href={image}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full neon-border bg-transparent"
+              >
+                <Eye className="mr-2 h-4 w-4" />
+                View Screenshot
+              </Button>
+            </a>
           )}
 
           {/* Actions */}
@@ -145,7 +136,7 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
                       { id: _id },
                       {
                         onSuccess: () => {},
-                      }
+                      },
                     );
                   }
                 }}
@@ -163,7 +154,7 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
                       { id: _id },
                       {
                         onSuccess: () => {},
-                      }
+                      },
                     );
                   }
                 }}

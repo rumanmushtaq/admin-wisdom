@@ -36,10 +36,10 @@ const useLogin = () => {
         // Cookies
         document.cookie = `access_token=${access_token}; path=/; secure; samesite=strict;`;
         document.cookie = `refresh_token=${refresh_token}; path=/; secure; samesite=strict;`;
+        localStorage.setItem("user", JSON.stringify(user));
+  
+        router.push("/");
       }
-      localStorage.setItem("user", JSON.stringify(user));
-
-      router.push("/");
     },
     onError: (error: any) => {
       console.error("Login failed:", error);
