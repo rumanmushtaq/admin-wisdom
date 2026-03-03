@@ -66,6 +66,12 @@ export const setupAxios = () => {
           // toast.error("Session expired. Please log in again.");
 
           console.log("Session expired. Please log in again.");
+          Cookies.remove("access_token");
+          Cookies.remove("refresh_token");
+          localStorage.removeItem("user");
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          
           window.location.href = "/login";
         } else if (status >= 400 && status < 500) {
           // Client-side errors
