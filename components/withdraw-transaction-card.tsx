@@ -48,15 +48,15 @@ export function TransactionCard({ withdrawal }: TransactionCardProps) {
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10 border neon-border">
                 <AvatarFallback className="bg-secondary">
-                  {user.firstName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
+                  {user?.firstName
+                    ?.split(" ")
+                    ?.map((n) => n[0])
+                    ?.join("")}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold">{user.firstName}</p>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
+                <p className="font-semibold">{user?.firstName}</p>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
               </div>
             </div>
             <Badge

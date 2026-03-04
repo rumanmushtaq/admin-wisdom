@@ -37,6 +37,10 @@ const apiEndpoints = {
     UPDATE: (id: string) => `/api/v1/tiers/${id}`,
     GET_ONE: (id: string) => `/api/v1/tiers/${id}`,
     DELETE: (id: string) => `/api/v1/tiers/${id}`,
+  },
+  Dashboard : {
+    GET_ALL: "/api/v1/dashboard",
+    STATS: "/api/v1/dashboard/stats",
   }
 };
 

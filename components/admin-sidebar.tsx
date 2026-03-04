@@ -29,7 +29,6 @@ const navItems = [
   { href: "/admin/withdrawals", icon: ArrowUpCircle, label: "Withdrawals" },
   { href: "/admin/tasks", icon: ClipboardCheck, label: "Tasks" },
   { href: "/admin/referrals", icon: UserPlus, label: "Referrals" },
-  { href: "/admin/requests", icon: FileCheck, label: "Requests" },
   { href: "/admin/settings", icon: Settings, label: "Settings" },
 ]
 

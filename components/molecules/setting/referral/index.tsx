@@ -62,8 +62,8 @@ const Index = ({ settings }: { settings: any }) => {
               rules={{
                 required: "Sign-up bonus is required",
                 min: {
-                  value: 1,
-                  message: "Sign-up bonus must be at least $1",
+                  value: 0,
+                  message: "Sign-up bonus must be at least $0",
                 },
               }}
               render={({ field }) => (

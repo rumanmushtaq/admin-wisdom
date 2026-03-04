@@ -34,6 +34,8 @@ export default function WithdrawalsPage() {
 
   const allWithdraws = withdraws?.data?.data;
 
+  console.log("allWithdraws",allWithdraws)
+
   const pendingWithdrawals = allWithdraws?.filter(
     (w) => w.status === WithdrawalStatus.PENDING
   );
