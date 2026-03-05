@@ -3,15 +3,36 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import taskServices from "@/services/task";
 
 export const useTask = (params: any) => {
-  const { page = 1, limit = 10, sortBy, sortOrder, search, isActive } = params;
+  const {
+    page = 1,
+    limit = 10,
+    sortBy,
+    sortOrder,
+    search,
+    isActive,
+    taskStatus,
+    dateFrom,
+    dateTo,
+  } = params;
 
   const {
     data: tasks,
-    status: taskStatus,
+    status: queryStatus,
     refetch: taskRefetch,
     isPending: taskIsPending,
   } = useQuery({
-    queryKey: ["tasks", page, search, limit, sortBy, sortOrder, isActive],
+    queryKey: [
+      "tasks",
+      page,
+      search,
+      limit,
+      sortBy,
+      sortOrder,
+      isActive,
+      taskStatus,
+      dateFrom,
+      dateTo,
+    ],
     queryFn: () =>
       taskServices.getAllTasks({
         page,
@@ -19,8 +40,11 @@ export const useTask = (params: any) => {
         sortBy,
         sortOrder,
         search,
+        taskStatus,
+        dateFrom,
+        dateTo,
       }),
     staleTime: 5000,
   });
-  return {tasks,taskStatus, taskRefetch,taskIsPending };
+  return { tasks, taskStatus: queryStatus, taskRefetch, taskIsPending };
 };

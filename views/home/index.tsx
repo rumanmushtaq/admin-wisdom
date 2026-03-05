@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight, Loader2, Zap } from "lucide-react";
 import useHome from "./useHome";
 
 const formatNumber = (num: number | string | undefined | null) => {
@@ -26,6 +26,20 @@ const formatCurrency = (num: number | string | undefined | null) => {
 
 export default function Index() {
   const { stats, isLoading, isError } = useHome();
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
+  }
+  if(isError){
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-red-500">Something went wrong</p>
+      </div>
+    );
+  }
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
       <div className="text-center space-y-8 max-w-2xl">
@@ -52,7 +66,7 @@ export default function Index() {
             </Button>
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-8">
           <div className="neon-border rounded-lg p-4 hover:neon-glow transition-all">
             <p className="text-3xl font-bold text-primary">
               {formatNumber(stats?.totalUsers)}

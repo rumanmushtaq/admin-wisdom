@@ -20,7 +20,7 @@ class WithdrawsService {
     }>
   > {
     try {
-      const res = await HTTP_CLIENT.get(apiEndpoints.Packages.GET_ALL, {
+      const res = await HTTP_CLIENT.get(apiEndpoints.Withdraws.GET_ALL, {
         params: {
           ...params,
           sortOrder: params?.sortOrder?.toUpperCase(), // asc -> ASC

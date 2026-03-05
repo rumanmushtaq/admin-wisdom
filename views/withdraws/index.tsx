@@ -14,6 +14,7 @@ import { useState } from "react";
 import useWithdraws from "./useWithdraws";
 import { WithdrawalStatus } from "@/types/withdraws.types";
 import { TransactionCard } from "@/components/withdraw-transaction-card";
+import { WithdrawalsFilters } from "@/components/withdrawals-filters";
 
 export default function WithdrawalsPage() {
   const [page, setPage] = useState<number>(1);
@@ -22,6 +23,11 @@ export default function WithdrawalsPage() {
   const [search, setSearch] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+  const [minAmount, setMinAmount] = useState<number>(0);
+  const [maxAmount, setMaxAmount] = useState<number>(0);
+  const [userId, setUserId] = useState<string>("");
 
   const { withdraws, withdrawsStatus, withdrawsRefetch, withdrawsIsPending } =
     useWithdraws({
@@ -30,20 +36,26 @@ export default function WithdrawalsPage() {
       search: search || undefined,
       sortBy,
       sortOrder,
+      status: status !== "all" ? (status as WithdrawalStatus) : undefined,
+      fromDate: fromDate || undefined,
+      toDate: toDate || undefined,
+      minAmount: minAmount || undefined,
+      maxAmount: maxAmount || undefined,
+      userId: userId || undefined,
     });
 
   const allWithdraws = withdraws?.data?.data;
 
-  console.log("allWithdraws",allWithdraws)
+  console.log("allWithdraws", allWithdraws);
 
   const pendingWithdrawals = allWithdraws?.filter(
-    (w) => w.status === WithdrawalStatus.PENDING
+    (w) => w.status === WithdrawalStatus.PENDING,
   );
   const approvedWithdrawals = allWithdraws?.filter(
-    (w) => w.status === WithdrawalStatus.APPROVED
+    (w) => w.status === WithdrawalStatus.APPROVED,
   );
   const rejectedWithdrawals = allWithdraws?.filter(
-    (w) => w.status === WithdrawalStatus.REJECTED
+    (w) => w.status === WithdrawalStatus.REJECTED,
   );
 
   return (
@@ -89,57 +101,53 @@ export default function WithdrawalsPage() {
               />
             </div>
 
+            {/* Filters */}
+            <WithdrawalsFilters
+              search={search}
+              setSearch={setSearch}
+              userId={userId}
+              setUserId={setUserId}
+              fromDate={fromDate}
+              setFromDate={setFromDate}
+              toDate={toDate}
+              setToDate={setToDate}
+              minAmount={minAmount}
+              setMinAmount={setMinAmount}
+              maxAmount={maxAmount}
+              setMaxAmount={setMaxAmount}
+            />
+
             {/* Tabs */}
-            <Tabs defaultValue={WithdrawalStatus.PENDING} className="space-y-6">
+            <Tabs
+              value={status}
+              onValueChange={setStatus}
+              className="space-y-6"
+            >
               <TabsList className="neon-border">
+                <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value={WithdrawalStatus.PENDING}>
-                  Pending ({pendingWithdrawals?.length ?? 0})
+                  Pending
                 </TabsTrigger>
                 <TabsTrigger value={WithdrawalStatus.APPROVED}>
-                  Approved ({approvedWithdrawals?.length ?? 0})
+                  Approved
                 </TabsTrigger>
                 <TabsTrigger value={WithdrawalStatus.REJECTED}>
-                  Rejected ({rejectedWithdrawals?.length ?? 0})
-                </TabsTrigger>
-                <TabsTrigger value="all">
-                  All ({allWithdraws?.length ?? 0})
+                  Rejected
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value={WithdrawalStatus.PENDING} className="space-y-4">
-                {pendingWithdrawals?.map((withdrawal) => (
+              <TabsContent value={status} className="space-y-4">
+                {allWithdraws?.map((withdrawal: any) => (
                   <TransactionCard
                     key={withdrawal._id}
                     withdrawal={withdrawal}
                   />
                 ))}
-              </TabsContent>
-
-              <TabsContent value={WithdrawalStatus.APPROVED} className="space-y-4">
-                {approvedWithdrawals?.map((withdrawal) => (
-                  <TransactionCard
-                    key={withdrawal._id}
-                    withdrawal={withdrawal}
-                  />
-                ))}
-              </TabsContent>
-
-              <TabsContent value={WithdrawalStatus.REJECTED} className="space-y-4">
-                {rejectedWithdrawals?.map((withdrawal) => (
-                  <TransactionCard
-                    key={withdrawal._id}
-                    withdrawal={withdrawal}
-                  />
-                ))}
-              </TabsContent>
-
-              <TabsContent value="all" className="space-y-4">
-                {allWithdraws?.map((withdrawal) => (
-                  <TransactionCard
-                    key={withdrawal._id}
-                    withdrawal={withdrawal}
-                  />
-                ))}
+                {allWithdraws?.length === 0 && (
+                  <div className="text-center text-muted-foreground py-8">
+                    No withdrawals found matching the current filters.
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>

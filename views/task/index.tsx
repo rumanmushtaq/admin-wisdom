@@ -1,9 +1,8 @@
 "use client";
 import { AdminSidebar } from "@/components/admin-sidebar";
-import { TaskCard } from "@/components/task-card";
+import { TasksDataTable } from "@/components/tasks-data-table";
 import { NeonCard } from "@/components/neon-card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ClipboardCheck,
   Clock,
@@ -17,94 +16,27 @@ import { useTask } from "./useTask";
 import { Task } from "@/types/task.types";
 import { TaskStatus } from "./types";
 
-const tasks = [
-  {
-    id: 1,
-    title: "Complete Social Media Share",
-    description: "Share platform on Twitter and Facebook",
-    assignedTo: { name: "John Doe", email: "john@example.com" },
-    status: "pending" as const,
-    progress: 50,
-    reward: "$25",
-    deadline: "Dec 20, 2024",
-  },
-  {
-    id: 2,
-    title: "Verify Email Address",
-    description: "Verify email to activate account features",
-    assignedTo: { name: "Sarah Smith", email: "sarah@example.com" },
-    status: "completed" as const,
-    progress: 100,
-    reward: "$10",
-    deadline: "Dec 15, 2024",
-  },
-  {
-    id: 3,
-    title: "Complete Profile Information",
-    description: "Fill out complete profile with all required fields",
-    assignedTo: { name: "Mike Johnson", email: "mike@example.com" },
-    status: "pending" as const,
-    progress: 75,
-    reward: "$15",
-    deadline: "Dec 22, 2024",
-  },
-  {
-    id: 4,
-    title: "Watch Tutorial Videos",
-    description: "Complete all platform tutorial videos",
-    assignedTo: { name: "Emily Brown", email: "emily@example.com" },
-    status: "completed" as const,
-    progress: 100,
-    reward: "$20",
-    deadline: "Dec 18, 2024",
-  },
-  {
-    id: 5,
-    title: "Invite 5 Friends",
-    description: "Invite at least 5 friends to join the platform",
-    assignedTo: { name: "David Lee", email: "david@example.com" },
-    status: "rejected" as const,
-    progress: 20,
-    reward: "$50",
-    deadline: "Dec 25, 2024",
-  },
-  {
-    id: 6,
-    title: "Daily Login Streak",
-    description: "Maintain 7-day consecutive login streak",
-    assignedTo: { name: "John Doe", email: "john@example.com" },
-    status: "pending" as const,
-    progress: 85,
-    reward: "$30",
-    deadline: "Dec 21, 2024",
-  },
-];
-
 export default function TasksPage() {
-  const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(10);
-  const [sortBy, setSortBy] = useState<string>("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
-  const { tasks, taskStatus, taskRefetch, taskIsPending } = useTask({
-    page,
-    limit,
-    sortBy,
-    sortOrder,
+  const { tasks, taskIsPending } = useTask({
+    page: 1,
+    limit: 10,
+    sortBy: "createdAt",
+    sortOrder: "desc",
   });
 
-
-  const allTasks = tasks?.data?.data || [];
+  console.log("tasks", tasks);
+  const allTasks = tasks?.data || [];
+  const totalTasks = tasks?.total || 0;
 
   console.log("allTasks", allTasks);
   const pendingTasks = allTasks.filter(
-    (t: Task) => t.status === TaskStatus.PENDING
+    (t: Task) => t.status === TaskStatus.PENDING,
   );
   const completedTasks = allTasks?.filter(
-    (t: Task) => t.status === TaskStatus.COMPLETED
+    (t: Task) => t.status === TaskStatus.COMPLETED,
   );
   const rejectedTasks = allTasks?.filter(
-    (t: Task) => t.status === TaskStatus.REJECTED
+    (t: Task) => t.status === TaskStatus.REJECTED,
   );
 
   return (
@@ -138,7 +70,7 @@ export default function TasksPage() {
             <div className="grid gap-4 md:grid-cols-4 mb-8">
               <NeonCard
                 title="Total Tasks"
-                value={allTasks?.length}
+                value={totalTasks}
                 icon={ClipboardCheck}
               />
               <NeonCard
@@ -159,58 +91,8 @@ export default function TasksPage() {
             </div>
 
             {/* Tabs */}
-            <Tabs defaultValue="all" className="space-y-6">
-              <TabsList className="neon-border">
-                <TabsTrigger value="all">
-                  All Tasks ({allTasks?.length})
-                </TabsTrigger>
-                <TabsTrigger value="pending">
-                  Pending ({pendingTasks?.length})
-                </TabsTrigger>
-                <TabsTrigger value="completed">
-                  Completed ({completedTasks?.length})
-                </TabsTrigger>
-                <TabsTrigger value="rejected">
-                  Rejected ({rejectedTasks?.length})
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent
-                value="all"
-                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-              >
-                {allTasks?.map((task: Task) => (
-                  <TaskCard key={task._id} taskDetail={task} />
-                ))}
-              </TabsContent>
-
-              <TabsContent
-                value="pending"
-                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-              >
-                {pendingTasks?.map((task: Task) => (
-                  <TaskCard key={task._id} taskDetail={task} />
-                ))}
-              </TabsContent>
-
-              <TabsContent
-                value="completed"
-                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-              >
-                {completedTasks?.map((task: Task) => (
-                  <TaskCard key={task._id} taskDetail={task} />
-                ))}
-              </TabsContent>
-
-              <TabsContent
-                value="rejected"
-                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-              >
-                {rejectedTasks?.map((task: Task) => (
-                  <TaskCard key={task._id} taskDetail={task} />
-                ))}
-              </TabsContent>
-            </Tabs>
+            {/* Data Table */}
+            <TasksDataTable />
           </div>
         </main>
       )}

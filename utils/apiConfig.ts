@@ -41,6 +41,11 @@ const apiEndpoints = {
   Dashboard : {
     GET_ALL: "/api/v1/dashboard",
     STATS: "/api/v1/dashboard/stats",
+  },
+  Withdraws : {
+    GET_ALL: "/api/v1/withdrawals/all",
+    APPROVE: (id: string) => `/api/v1/withdrawals/approve/${id}`,
+    REJECCT: (id: string) => `/api/v1/withdrawals/reject/${id}`,
   }
 };
 

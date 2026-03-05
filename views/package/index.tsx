@@ -108,14 +108,16 @@ export default function PackagesPage() {
         />
       </div>
       {/* MODAL */}
-      <PackageModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEditingPackageId(null);
-        }}
-        editPackage={editingPackageId}
-      />
+      {isModalOpen && (
+        <PackageModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingPackageId(null);
+          }}
+          editPackage={editingPackageId}
+        />
+      )}
     </main>
   );
 }

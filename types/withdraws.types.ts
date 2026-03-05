@@ -4,6 +4,12 @@ export interface GetWithdrawsParams {
   search?: string;
   isActive?: string;
   sortBy?: string;
+  status?: WithdrawalStatus;
+  fromDate?: string;
+  toDate?: string;
+  minAmount?: number;
+  maxAmount?: number;
+  userId?: string;
   sortOrder?: "asc" | "desc";
 }
 

@@ -14,7 +14,6 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ taskDetail }: TaskCardProps) {
-  console.log("taskDetail", taskDetail);
   const { task, user, expiresAt } = taskDetail;
   return (
     <Card className="neon-border hover:neon-glow transition-all">
