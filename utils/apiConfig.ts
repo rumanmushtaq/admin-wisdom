@@ -5,6 +5,7 @@ const apiEndpoints = {
   },
   Users: {
     GET_ALL: `/api/v1/users`,
+    GET_ONE: (id: string) => `/api/v1/users/details/${id}`,
     RESTORE: `/api/v1/users/restore`,
   },
   Packages: {
@@ -26,6 +27,8 @@ const apiEndpoints = {
   },
   Settings : {
     UPDATE_BINANCE : `/api/v1/settings/binance`,
+    BINANCE_ADDRESSES: `/api/v1/settings/binance/addresses`,
+    BINANCE_ADDRESS: (id: string) => `/api/v1/settings/binance/addresses/${id}`,
     UPDATE: `/api/v1/settings`,
     ALL : `/api/v1/settings`,
   },

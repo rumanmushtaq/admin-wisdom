@@ -20,6 +20,15 @@ class UsersService {
     }
   }
 
+  async getUserById(id: string): Promise<any> {
+    try {
+      const { data } = await HTTP_CLIENT.get(apiEndpoints.Users.GET_ONE(id));
+      return data
+    } catch (error: any) {
+      return error.message
+    }
+  }
+
   async toggleActive({ id, isActive }: ToggleActiveParams): Promise<any> {
     try {
       const res = await HTTP_CLIENT.put(`${apiEndpoints.Users.GET_ALL}/${id}`, {

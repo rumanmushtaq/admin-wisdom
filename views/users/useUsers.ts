@@ -59,21 +59,13 @@ export function useToggleUserActive() {
 
   return useMutation({
     mutationFn: async ({ id, isActive }: ToggleActiveParams) => {
-      usersService.toggleActive({ id, isActive });
+      return usersService.toggleActive({ id, isActive });
     },
-    onSuccess: (_, variables) => {
-      queryClient.setQueriesData({ queryKey: ["users"] }, (oldData: any) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          data: oldData.data.map((user: any) =>
-            user._id === variables.id
-              ? { ...user, isActive: variables.isActive }
-              : user
-          ),
-        };
-      });
+    onSuccess: (response) => {
+      if (response?.success) {
+        // Invalidate all users queries to refetch fresh data
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+      }
     },
     onError: (err) => {
       console.error("Failed to update user status", err);
@@ -89,24 +81,17 @@ export function useDeleteUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id }: DeleteUserParams) => usersService.delete(id),
-
-    onSuccess: (_, variables) => {
-      queryClient.setQueriesData({ queryKey: ["users"] }, (oldData: any) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          data: {
-            ...oldData.data,
-            data: oldData.data.data.map((user: any) =>
-              user._id === variables.id
-                ? { ...user, isDeleted: true }
-                : user
-            ),
-          },
-        };
-      });
+    mutationFn: async ({ id }: DeleteUserParams) => {
+      return usersService.delete(id);
+    },
+    onSuccess: (response) => {
+      if (response?.success) {
+        // Invalidate all users queries to refetch fresh data
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+      }
+    },
+    onError: (err) => {
+      console.error("Failed to delete user", err);
     },
   });
 }
@@ -115,24 +100,17 @@ export function useRestoreUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id }: DeleteUserParams) => usersService.restore(id),
-
-    onSuccess: (_, variables) => {
-      queryClient.setQueriesData({ queryKey: ["users"] }, (oldData: any) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          data: {
-            ...oldData.data,
-            data: oldData.data.data.map((user: any) =>
-              user._id === variables.id
-                ? { ...user, isDeleted: false }
-                : user
-            ),
-          },
-        };
-      });
+    mutationFn: async ({ id }: DeleteUserParams) => {
+      return usersService.restore(id);
+    },
+    onSuccess: (response) => {
+      if (response?.success) {
+        // Invalidate all users queries to refetch fresh data
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+      }
+    },
+    onError: (err) => {
+      console.error("Failed to restore user", err);
     },
   });
 }

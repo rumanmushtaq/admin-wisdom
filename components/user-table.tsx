@@ -34,7 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { UserProfileModal } from "@/components/user-profile-modal";
+import { UserProfileModal } from "@/components/userProfile/user-profile-modal";
 import {
   useDeleteUser,
   useGetUsers,
@@ -42,6 +42,77 @@ import {
   useToggleUserActive,
 } from "@/views/users/useUsers";
 import { Switch } from "./ui/switch";
+
+/* -------------------- Cell Components -------------------- */
+type ToggleCellProps = {
+  user: any;
+  field: "isActive" | "isDeleted";
+  mutationHook: () => any;
+};
+
+function ToggleCell({ user, field, mutationHook }: ToggleCellProps) {
+  const mutation = mutationHook();
+
+  const handleChange = (val: boolean) => {
+    mutation.mutate({ id: user._id, [field]: val });
+  };
+
+  return (
+    <div>
+      <Switch
+        checked={user[field]}
+        onCheckedChange={handleChange}
+        disabled={mutation.isPending}
+      />
+    </div>
+  );
+}
+
+function ActionsCell({
+  user,
+  onViewProfile,
+}: {
+  user: any;
+  onViewProfile: (user: any) => void;
+}) {
+  const deleteUser = useDeleteUser();
+  const restoreUser = useRestoreUser();
+
+  const handleDelete = () => {
+    deleteUser.mutate({ id: user._id });
+  };
+
+  const handleRestore = () => {
+    restoreUser.mutate({ id: user._id });
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <MoreVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => onViewProfile(user)}>
+          <Eye className="mr-2 h-4 w-4" />
+          View Profile
+        </DropdownMenuItem>
+        {user.isDeleted ? (
+          <DropdownMenuItem onClick={handleRestore}>
+            <ArchiveRestore className="mr-2 h-4 w-4" />
+            Restore User
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem onClick={handleDelete}>
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete User
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function UserTable() {
   /* -------------------- Filters (GLOBAL STATE) -------------------- */
@@ -54,8 +125,13 @@ export function UserTable() {
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  /* -------------------- Handlers -------------------- */
+  const handleViewProfile = (user: any) => {
+    setSelectedUser(user._id);
+  };
 
   /* -------------------- API -------------------- */
   const { data, isLoading } = useGetUsers({
@@ -72,7 +148,6 @@ export function UserTable() {
   const users = data?.data?.data ?? [];
   const totalPages = data?.data?.pagination?.totalPages ?? 1;
 
-  console.log("users", users);
   /* -------------------- Columns -------------------- */
   const columns = useMemo<ColumnDef<any>[]>(
     () => [
@@ -113,7 +188,7 @@ export function UserTable() {
         cell: ({ row }) => (
           <div>
             <p className="text-sm text-muted-foreground">
-              {row.original.credits}
+             {Number(row.original.credits).toFixed(2)}
             </p>
           </div>
         ),
@@ -132,90 +207,39 @@ export function UserTable() {
       {
         accessorKey: "isActive",
         header: "Active",
-        cell: ({ row }) => {
-          const user = row.original;
-          const toggleUserActive = useToggleUserActive();
-
-          const handleChange = (val: boolean) => {
-            toggleUserActive.mutate({ id: user._id, isActive: val });
-          };
-          return (
-            <div>
-              <Switch
-                checked={row.original.isActive}
-                onCheckedChange={(val: boolean) => handleChange(val)}
-                disabled={toggleUserActive.isPending}
-              />
-            </div>
-          );
-        },
+        cell: ({ row }) => <ToggleCell user={row.original} field="isActive" mutationHook={useToggleUserActive} />,
       },
       {
-        accessorKey: "isVerified",
-        header: "Verified",
-        cell: ({ row }) => {
-          const isVerified = row.original.isVerified;
-          return (
-            <Badge
-              variant={isVerified ? "default" : "outline"} // default = green, outline = grey
-              className="px-2 py-1"
-            >
-              {isVerified ? "Verified" : "Not Verified"}
-            </Badge>
-          );
-        },
+        accessorKey: "isDeleted",
+        header: "Restricted",
+        cell: ({ row }) => <ToggleCell user={row.original} field="isDeleted" mutationHook={useDeleteUser} />
       },
-
-       
+      // {
+      //   accessorKey: "isVerified",
+      //   header: "Verified",
+      //   cell: ({ row }) => {
+      //     const isVerified = row.original.isVerified;
+      //     return (
+      //       <Badge
+      //         variant={isVerified ? "default" : "outline"}
+      //         className="px-2 py-1"
+      //       >
+      //         {isVerified ? "Verified" : "Not Verified"}
+      //       </Badge>
+      //     );
+      //   },
+      // },
       {
         header: "Actions",
-        cell: ({ row }) => {
-          const user = row.original;
-          const deleteUser = useDeleteUser();
-          const restoreUser = useRestoreUser();
-
-          const handleDelete = () => {
-            deleteUser.mutate({ id: user._id });
-          };
-
-          const handleRestore = () => {
-            restoreUser.mutate({ id: user._id });
-          };
-          return (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => {
-                    setSelectedUser(row.original);
-                    setIsModalOpen(true);
-                  }}
-                >
-                  <Eye className="mr-2 h-4 w-4" />
-                  View Profile
-                </DropdownMenuItem>
-                {row.original.isDeleted ? (
-                  <DropdownMenuItem onClick={handleRestore}>
-                    <ArchiveRestore className="mr-2 h-4 w-4" />
-                    Restore User
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem onClick={handleDelete}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete User
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          );
-        },
+        cell: ({ row }) => (
+          <ActionsCell
+            user={row.original}
+            onViewProfile={handleViewProfile}
+          />
+        ),
       },
     ],
-    []
+    [] // No dependencies needed since handleViewProfile is stable
   );
 
   /* -------------------- Table -------------------- */
@@ -315,9 +339,9 @@ export function UserTable() {
 
       {selectedUser && (
         <UserProfileModal
-          open={isModalOpen}
-          onOpenChange={setIsModalOpen}
-          user={selectedUser}
+          open={Boolean(selectedUser)}
+          onOpenChange={() => setSelectedUser(null)}
+          user={selectedUser as string}
         />
       )}
     </div>

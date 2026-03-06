@@ -18,6 +18,7 @@ import ReferralSetting from "@/components/molecules/setting/referral";
 import { useMemo, useState } from "react";
 import TierSetting from "@/components/molecules/setting/tier";
 import TierSettingTable from "@/components/organisms/settings/tier";
+import BinanceAddressSetting from "@/components/molecules/setting/binance-address";
 
 export default function SettingsPage() {
   const [form, setForm] = useState<boolean>(false);
@@ -90,6 +91,9 @@ export default function SettingsPage() {
                 <Button className="neon-glow">Save Changes</Button>
               </CardContent>
             </Card>
+
+            {/* Binance Wallet Addresses */}
+            <BinanceAddressSetting />
 
             {/* Referral Settings */}
             {memoizedSettings && (
