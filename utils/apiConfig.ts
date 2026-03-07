@@ -25,27 +25,33 @@ const apiEndpoints = {
     APPROVE: (id: string) => `/api/v1/transactions/approve/${id}`,
     REJECCT: (id: string) => `/api/v1/transactions/reject/${id}`,
   },
-  Settings : {
-    UPDATE_BINANCE : `/api/v1/settings/binance`,
+  Settings: {
+    UPDATE_BINANCE: `/api/v1/settings/binance`,
     BINANCE_ADDRESSES: `/api/v1/settings/binance/addresses`,
     BINANCE_ADDRESS: (id: string) => `/api/v1/settings/binance/addresses/${id}`,
     UPDATE: `/api/v1/settings`,
-    ALL : `/api/v1/settings`,
+    ALL: `/api/v1/settings`,
   },
-  Tier : {
-   
-
-        GET_ALL: "/api/v1/tiers",
+  Wallet: {
+    GET_ALL: "/api/v1/wallets",
+    CREATE: "/api/v1/wallets",
+    UPDATE: (id: string) => `/api/v1/wallets/${id}`,
+    GET_ONE: (id: string) => `/api/v1/wallets/${id}`,
+    DELETE: (id: string) => `/api/v1/wallets/${id}`,
+    SET_ACTIVE: (id: string) => `/api/v1/wallets/${id}/activate`,
+  },
+  Tier: {
+    GET_ALL: "/api/v1/tiers",
     CREATE: "/api/v1/tiers",
     UPDATE: (id: string) => `/api/v1/tiers/${id}`,
     GET_ONE: (id: string) => `/api/v1/tiers/${id}`,
     DELETE: (id: string) => `/api/v1/tiers/${id}`,
   },
-  Dashboard : {
+  Dashboard: {
     GET_ALL: "/api/v1/dashboard",
     STATS: "/api/v1/dashboard/stats",
   },
-  Withdraws : {
+  Withdraws: {
     GET_ALL: "/api/v1/withdrawals/all",
     APPROVE: (id: string) => `/api/v1/withdrawals/approve/${id}`,
     REJECCT: (id: string) => `/api/v1/withdrawals/reject/${id}`,

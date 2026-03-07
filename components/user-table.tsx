@@ -212,7 +212,7 @@ export function UserTable() {
       {
         accessorKey: "isDeleted",
         header: "Restricted",
-        cell: ({ row }) => <ToggleCell user={row.original} field="isDeleted" mutationHook={useDeleteUser} />
+        cell: ({ row }) => <ToggleCell user={row.original} field="isDeleted" mutationHook={row.original.isDeleted ? useRestoreUser : useDeleteUser} />
       },
       // {
       //   accessorKey: "isVerified",

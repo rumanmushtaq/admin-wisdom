@@ -18,6 +18,7 @@ import useBinanceAddresses, { BinanceAddress } from "./useBinanceAddresses";
 export default function BinanceAddressSetting() {
   const {
     addresses,
+    activeId,
     isLoading,
     addAddress,
     deleteAddress,
@@ -39,8 +40,8 @@ export default function BinanceAddressSetting() {
     setShowForm(false);
   };
 
-  const handleSetActive = async (id: string) => {
-    await setActiveAddress(id);
+  const handleSetActive = (id: string) => {
+    setActiveAddress(id);
   };
 
   const handleDelete = async (id: string) => {
@@ -70,7 +71,7 @@ export default function BinanceAddressSetting() {
           </div>
         ) : (
           <RadioGroup
-            value={addresses.find((a: BinanceAddress) => a.isActive)?._id || ""}
+            value={activeId || ""}
             onValueChange={handleSetActive}
             className="space-y-3"
           >
@@ -78,7 +79,7 @@ export default function BinanceAddressSetting() {
               <div
                 key={addr._id}
                 className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
-                  addr.isActive
+                  activeId === addr._id
                     ? "border-primary bg-primary/5 neon-glow"
                     : "border-border hover:border-primary/50"
                 }`}
@@ -96,7 +97,7 @@ export default function BinanceAddressSetting() {
                       className="font-medium cursor-pointer block"
                     >
                       {addr.name}
-                      {addr.isActive && (
+                      {activeId === addr._id && (
                         <span className="ml-2 text-xs text-primary">(Active)</span>
                       )}
                     </Label>
@@ -172,7 +173,7 @@ export default function BinanceAddressSetting() {
           <Button
             variant="outline"
             onClick={() => setShowForm(true)}
-            className="w-full border-dashed border-2 hover:border-primary hover:bg-primary/5"
+            className="w-full border-dashed border-2 hover:border-primary hover:bg-primary/5 hover:text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add New Address

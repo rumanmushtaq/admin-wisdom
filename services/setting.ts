@@ -71,7 +71,7 @@ class SettingsService {
      ========================== */
   async getBinanceAddresses(): Promise<ApiResponse<any>> {
     try {
-      const res = await HTTP_CLIENT.get(apiEndpoints.Settings.BINANCE_ADDRESSES);
+      const res = await HTTP_CLIENT.get(apiEndpoints.Wallet.GET_ALL);
       return {
         success: true,
         data: res.data,
@@ -86,7 +86,7 @@ class SettingsService {
 
   async addBinanceAddress(payload: { name: string; address: string }): Promise<ApiResponse<any>> {
     try {
-      const res = await HTTP_CLIENT.post(apiEndpoints.Settings.BINANCE_ADDRESSES, payload);
+      const res = await HTTP_CLIENT.post(apiEndpoints.Wallet.CREATE, payload);
       return {
         success: true,
         data: res.data,
@@ -101,7 +101,7 @@ class SettingsService {
 
   async updateBinanceAddress(id: string, payload: { name?: string; address?: string; isActive?: boolean }): Promise<ApiResponse<any>> {
     try {
-      const res = await HTTP_CLIENT.put(apiEndpoints.Settings.BINANCE_ADDRESS(id), payload);
+      const res = await HTTP_CLIENT.put(apiEndpoints.Wallet.UPDATE(id), payload);
       return {
         success: true,
         data: res.data,
@@ -116,7 +116,7 @@ class SettingsService {
 
   async deleteBinanceAddress(id: string): Promise<ApiResponse<any>> {
     try {
-      const res = await HTTP_CLIENT.delete(apiEndpoints.Settings.BINANCE_ADDRESS(id));
+      const res = await HTTP_CLIENT.delete(apiEndpoints.Wallet.DELETE(id));
       return {
         success: true,
         data: res.data,
@@ -131,7 +131,7 @@ class SettingsService {
 
   async setActiveBinanceAddress(id: string): Promise<ApiResponse<any>> {
     try {
-      const res = await HTTP_CLIENT.patch(`${apiEndpoints.Settings.BINANCE_ADDRESS(id)}/activate`);
+      const res = await HTTP_CLIENT.patch(apiEndpoints.Wallet.SET_ACTIVE(id));
       return {
         success: true,
         data: res.data,
