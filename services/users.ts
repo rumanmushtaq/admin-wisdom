@@ -23,9 +23,9 @@ class UsersService {
   async getUserById(id: string): Promise<any> {
     try {
       const { data } = await HTTP_CLIENT.get(apiEndpoints.Users.GET_ONE(id));
-      return data
+      return data;
     } catch (error: any) {
-      return error.message
+      return error.message;
     }
   }
 
@@ -46,10 +46,33 @@ class UsersService {
     }
   }
 
+  async toggleVerified({
+    id,
+    isVerified,
+  }: {
+    id: string;
+    isVerified: boolean;
+  }): Promise<any> {
+    try {
+      const res = await HTTP_CLIENT.put(`${apiEndpoints.Users.GET_ALL}/${id}`, {
+        isVerified,
+      });
+      return {
+        success: true,
+        data: res.data,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        data: error.message,
+      };
+    }
+  }
+
   async delete(id: string): Promise<any> {
     try {
       const res = await HTTP_CLIENT.delete(
-        `${apiEndpoints.Users.GET_ALL}/${id}`
+        `${apiEndpoints.Users.GET_ALL}/${id}`,
       );
       return {
         success: true,
@@ -66,7 +89,7 @@ class UsersService {
   async restore(id: string): Promise<any> {
     try {
       const res = await HTTP_CLIENT.patch(
-        `${apiEndpoints.Users.GET_ALL}/restore/${id}`
+        `${apiEndpoints.Users.GET_ALL}/restore/${id}`,
       );
       return {
         success: true,

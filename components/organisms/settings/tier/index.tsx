@@ -52,6 +52,10 @@ const Index = ({
       header: "Referral Task %",
     },
     {
+      accessorKey: "secondReferralTaskPercentage",
+      header: "Second Ref Task %",
+    },
+    {
       accessorKey: "minTasksCompleted",
       header: "Min Tasks",
     },

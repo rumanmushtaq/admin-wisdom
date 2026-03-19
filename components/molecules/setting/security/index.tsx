@@ -53,7 +53,7 @@ const Index = () => {
                 onClick={() =>
                   setShowPassword((p) => ({
                     ...p,
-                    change: !showPassword?.current,
+                    current: !showPassword?.current,
                   }))
                 }
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white"
@@ -121,7 +121,7 @@ const Index = () => {
                 render={({ field }) => (
                   <Input
                     {...field}
-                    type={showPassword?.new ? "text" : "password"}
+                    type={showPassword?.confirm ? "text" : "password"}
                     placeholder="Enter your confirm password"
                     className="pl-10 pr-10 neon-border bg-black/30"
                   />

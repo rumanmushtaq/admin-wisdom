@@ -59,7 +59,9 @@ const Index = ({ form, setForm, isEdit, setIsEdit }: PropsTypes) => {
               name="name"
               control={control}
               rules={{ required: "Tier name is required" }}
-              render={({ field }) => <Input className="neon-border" {...field} />}
+              render={({ field }) => (
+                <Input className="neon-border" {...field} />
+              )}
             />
             {errors.name && (
               <p className="text-red-500">{errors.name.message}</p>
@@ -133,6 +135,32 @@ const Index = ({ form, setForm, isEdit, setIsEdit }: PropsTypes) => {
             {errors.referralTaskPercentage && (
               <p className="text-red-500">
                 {errors.referralTaskPercentage.message}
+              </p>
+            )}
+          </div>
+
+          {/* Second Referral Task Percentage */}
+          <div className="space-y-2">
+            <Label>Second Referral Task Percentage (%)</Label>
+            <Controller
+              name="secondReferralTaskPercentage"
+              control={control}
+              rules={{
+                required: "Second referral task percentage is required",
+                min: { value: 0, message: "Minimum 0%" },
+              }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  className="neon-border"
+                  type="number"
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
+              )}
+            />
+            {errors.secondReferralTaskPercentage && (
+              <p className="text-red-500">
+                {errors.secondReferralTaskPercentage.message}
               </p>
             )}
           </div>

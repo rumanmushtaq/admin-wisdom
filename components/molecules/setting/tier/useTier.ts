@@ -26,6 +26,7 @@ export const useCreateTier = ({ tier }: { tier?: Tier | null }) => {
       level: 0,
       invitePercentage: 0,
       referralTaskPercentage: 0,
+      secondReferralTaskPercentage: 0,
       minTasksCompleted: 0,
       minReferralCount: 0,
       isActive: true,
@@ -39,6 +40,7 @@ export const useCreateTier = ({ tier }: { tier?: Tier | null }) => {
         level: tier.level ?? 0,
         invitePercentage: tier.invitePercentage ?? 0,
         referralTaskPercentage: tier.referralTaskPercentage ?? 0,
+        secondReferralTaskPercentage: tier.secondReferralTaskPercentage ?? 0,
         minTasksCompleted: tier.minTasksCompleted ?? 0,
         minReferralCount: tier.minReferralCount ?? 0,
         isActive: tier.isActive ?? true,
@@ -70,8 +72,8 @@ export const useCreateTier = ({ tier }: { tier?: Tier | null }) => {
         (oldData: any) => {
           if (!oldData) return oldData;
           return oldData?.map((tier: Tier) =>
-              tier._id === updatedTier?._id ? updatedTier : tier,
-            )
+            tier._id === updatedTier?._id ? updatedTier : tier,
+          );
         },
       );
       queryClient.setQueriesData(

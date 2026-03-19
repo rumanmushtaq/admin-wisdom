@@ -40,13 +40,14 @@ import {
   useGetUsers,
   useRestoreUser,
   useToggleUserActive,
+  useToggleUserVerified,
 } from "@/views/users/useUsers";
 import { Switch } from "./ui/switch";
 
 /* -------------------- Cell Components -------------------- */
 type ToggleCellProps = {
   user: any;
-  field: "isActive" | "isDeleted";
+  field: "isActive" | "isDeleted" | "isVerified";
   mutationHook: () => any;
 };
 
@@ -188,7 +189,7 @@ export function UserTable() {
         cell: ({ row }) => (
           <div>
             <p className="text-sm text-muted-foreground">
-             {Number(row.original.credits).toFixed(2)}
+              {Number(row.original.credits).toFixed(2)}
             </p>
           </div>
         ),
@@ -207,12 +208,37 @@ export function UserTable() {
       {
         accessorKey: "isActive",
         header: "Active",
-        cell: ({ row }) => <ToggleCell user={row.original} field="isActive" mutationHook={useToggleUserActive} />,
+        cell: ({ row }) => (
+          <ToggleCell
+            user={row.original}
+            field="isActive"
+            mutationHook={useToggleUserActive}
+          />
+        ),
       },
       {
         accessorKey: "isDeleted",
         header: "Restricted",
-        cell: ({ row }) => <ToggleCell user={row.original} field="isDeleted" mutationHook={row.original.isDeleted ? useRestoreUser : useDeleteUser} />
+        cell: ({ row }) => (
+          <ToggleCell
+            user={row.original}
+            field="isDeleted"
+            mutationHook={
+              row.original.isDeleted ? useRestoreUser : useDeleteUser
+            }
+          />
+        ),
+      },
+      {
+        accessorKey: "isVerified",
+        header: "Verified",
+        cell: ({ row }) => (
+          <ToggleCell
+            user={row.original}
+            field="isVerified"
+            mutationHook={useToggleUserVerified}
+          />
+        ),
       },
       // {
       //   accessorKey: "isVerified",
@@ -232,14 +258,11 @@ export function UserTable() {
       {
         header: "Actions",
         cell: ({ row }) => (
-          <ActionsCell
-            user={row.original}
-            onViewProfile={handleViewProfile}
-          />
+          <ActionsCell user={row.original} onViewProfile={handleViewProfile} />
         ),
       },
     ],
-    [] // No dependencies needed since handleViewProfile is stable
+    [], // No dependencies needed since handleViewProfile is stable
   );
 
   /* -------------------- Table -------------------- */
@@ -273,7 +296,7 @@ export function UserTable() {
                 <TableHead key={header.id}>
                   {flexRender(
                     header.column.columnDef.header,
-                    header.getContext()
+                    header.getContext(),
                   )}
                 </TableHead>
               ))}

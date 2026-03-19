@@ -23,6 +23,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Eye,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,17 @@ export function TasksDataTable() {
   const [dateTo, setDateTo] = useState<string>("");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  // Function to clear all filters
+  const clearAllFilters = () => {
+    setSearch("");
+    setStatusFilter("all");
+    setDateFrom("");
+    setDateTo("");
+    setSortBy("createdAt");
+    setSortOrder("desc");
+    setPage(1);
+  };
 
   /* =========================
      FETCH TASKS
@@ -251,55 +263,82 @@ export function TasksDataTable() {
   return (
     <div className="space-y-4">
       {/* Filters Row */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <Input
-          placeholder="Search items..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm neon-border bg-black/30 w-full sm:w-auto"
-        />
-
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-[180px] neon-border bg-black/30">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="rejected">Rejected</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 w-full">
+        <div className="flex flex-col gap-1.5 w-full sm:w-auto">
+          <label className="text-sm text-muted-foreground">Search</label>
           <Input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            className="w-full sm:w-[150px] neon-border bg-black/30"
-            placeholder="From Date"
-          />
-          <Input
-            type="date"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            className="w-full sm:w-[150px] neon-border bg-black/30"
-            placeholder="To Date"
+            placeholder="Search items..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-sm neon-border bg-black/30 w-full sm:w-auto"
           />
         </div>
 
-        <Select
-          value={sortOrder}
-          onValueChange={(value) => setSortOrder(value as "asc" | "desc")}
-        >
-          <SelectTrigger className="w-full sm:w-[180px] neon-border bg-black/30">
-            <SelectValue placeholder="Sort order" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="desc">Newest First</SelectItem>
-            <SelectItem value="asc">Oldest First</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col gap-1.5 w-full sm:w-auto">
+          <label className="text-sm text-muted-foreground">Status</label>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full sm:w-[180px] neon-border bg-black/30">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-1.5 w-full sm:w-auto">
+          <label className="text-sm text-muted-foreground">Date Range</label>
+          <div className="flex items-center gap-2">
+            <Input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="w-full sm:w-[150px] neon-border bg-black/30"
+              placeholder="From Date"
+            />
+            <span className="text-muted-foreground">-</span>
+            <Input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="w-full sm:w-[150px] neon-border bg-black/30"
+              placeholder="To Date"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5 w-full sm:w-auto">
+          <label className="text-sm text-muted-foreground">Sort Order</label>
+          <Select
+            value={sortOrder}
+            onValueChange={(value) => setSortOrder(value as "asc" | "desc")}
+          >
+            <SelectTrigger className="w-full sm:w-[180px] neon-border bg-black/30">
+              <SelectValue placeholder="Sort order" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desc">Newest First</SelectItem>
+              <SelectItem value="asc">Oldest First</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Clear All Filters Button */}
+        <div className="flex flex-col gap-1.5 w-full sm:w-auto">
+          <label className="text-sm text-transparent">Action</label>
+          <Button
+            onClick={clearAllFilters}
+            variant="outline"
+            className="neon-border hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/50 transition-colors"
+            title="Clear all filters"
+          >
+            <X className="h-4 w-4 mr-2" />
+            Clear All
+          </Button>
+        </div>
       </div>
 
       {/* Table */}

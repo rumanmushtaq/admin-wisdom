@@ -8,6 +8,9 @@ const apiEndpoints = {
     GET_ONE: (id: string) => `/api/v1/users/details/${id}`,
     RESTORE: `/api/v1/users/restore`,
   },
+  Referral: {
+    GET_ALL_CHAINS: "/api/v1/referral/all-chains",
+  },
   Packages: {
     GET_ALL: "/api/v1/packages",
     CREATE: "/api/v1/packages",
@@ -55,7 +58,7 @@ const apiEndpoints = {
     GET_ALL: "/api/v1/withdrawals/all",
     APPROVE: (id: string) => `/api/v1/withdrawals/approve/${id}`,
     REJECCT: (id: string) => `/api/v1/withdrawals/reject/${id}`,
-  }
+  },
 };
 
 export default apiEndpoints;

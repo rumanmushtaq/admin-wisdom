@@ -54,6 +54,11 @@ export interface ToggleActiveParams {
   isActive: boolean;
 }
 
+export interface ToggleVerifiedParams {
+  id: string;
+  isVerified: boolean;
+}
+
 export function useToggleUserActive() {
   const queryClient = useQueryClient();
 
@@ -69,6 +74,25 @@ export function useToggleUserActive() {
     },
     onError: (err) => {
       console.error("Failed to update user status", err);
+    },
+  });
+}
+
+export function useToggleUserVerified() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, isVerified }: ToggleVerifiedParams) => {
+      return usersService.toggleVerified({ id, isVerified });
+    },
+    onSuccess: (response) => {
+      if (response?.success) {
+        // Invalidate all users queries to refetch fresh data
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+      }
+    },
+    onError: (err) => {
+      console.error("Failed to update user verification status", err);
     },
   });
 }
@@ -114,4 +138,3 @@ export function useRestoreUser() {
     },
   });
 }
-

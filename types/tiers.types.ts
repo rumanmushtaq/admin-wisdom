@@ -4,6 +4,7 @@ export interface Tier {
   level: number;
   invitePercentage: number;
   referralTaskPercentage: number;
+  secondReferralTaskPercentage: number;
   minTasksCompleted: number;
   minReferralCount: number;
   isActive: boolean;

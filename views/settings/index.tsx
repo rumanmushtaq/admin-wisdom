@@ -15,15 +15,16 @@ import { Separator } from "@/components/ui/separator";
 import PasswordChangeSecurity from "@/components/molecules/setting/security";
 import useSettings from "./useSettings";
 import ReferralSetting from "@/components/molecules/setting/referral";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import TierSetting from "@/components/molecules/setting/tier";
 import TierSettingTable from "@/components/organisms/settings/tier";
 import BinanceAddressSetting from "@/components/molecules/setting/binance-address";
+import { Loader2 } from "lucide-react";
+import PlateformSetting from "@/components/molecules/setting/plateform";
 
 export default function SettingsPage() {
   const [form, setForm] = useState<boolean>(false);
-  const { settings, settingsStatus, settingsRefetch, settingsIsPending } =
-    useSettings();
+  const { settings } = useSettings();
 
   const memoizedSettings = useMemo(() => settings, [settings]);
   return (
@@ -43,62 +44,15 @@ export default function SettingsPage() {
           {/* Settings Cards */}
           <div className="space-y-6">
             {/* Platform Settings */}
-            <Card className="neon-border">
-              <CardHeader>
-                <CardTitle>Platform Settings</CardTitle>
-                <CardDescription>
-                  Configure basic platform information
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="platform-name">Platform Name</Label>
-                  <Input
-                    id="platform-name"
-                    placeholder="Crypto Earning Platform"
-                    className="neon-border"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="support-email">Support Email</Label>
-                  <Input
-                    id="support-email"
-                    type="email"
-                    placeholder="support@platform.com"
-                    className="neon-border"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="min-deposit">Minimum Deposit Amount</Label>
-                  <Input
-                    id="min-deposit"
-                    type="number"
-                    placeholder="10"
-                    className="neon-border"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="min-withdrawal">
-                    Minimum Withdrawal Amount
-                  </Label>
-                  <Input
-                    id="min-withdrawal"
-                    type="number"
-                    placeholder="25"
-                    className="neon-border"
-                  />
-                </div>
-                <Button className="neon-glow">Save Changes</Button>
-              </CardContent>
-            </Card>
+            <PlateformSetting settings={memoizedSettings} />
 
             {/* Binance Wallet Addresses */}
             <BinanceAddressSetting />
 
             {/* Referral Settings */}
-            {memoizedSettings && (
+            {/* {memoizedSettings && (
               <ReferralSetting settings={memoizedSettings} />
-            )}
+            )} */}
 
             <div className="flex justify-between w-full items-center">
               <p className="text-muted-foreground">Commission Tier</p>

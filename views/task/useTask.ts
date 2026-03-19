@@ -48,3 +48,14 @@ export const useTask = (params: any) => {
   });
   return { tasks, taskStatus: queryStatus, taskRefetch, taskIsPending };
 };
+
+export const useCreateTask = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: any) => taskServices.createTask(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+};

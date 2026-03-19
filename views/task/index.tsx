@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useTask } from "./useTask";
 import { Task } from "@/types/task.types";
 import { TaskStatus } from "./types";
+import { CreateTaskModal } from "./create-task-modal";
 
 export default function TasksPage() {
   const { tasks, taskIsPending } = useTask({
@@ -24,26 +25,20 @@ export default function TasksPage() {
     sortOrder: "desc",
   });
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   console.log("tasks", tasks);
   const allTasks = tasks?.data || [];
-  const totalTasks = tasks?.total || 0;
+  const totalTasks = tasks?.stats?.total || 0;
+  const pendingTasks = tasks?.stats?.pending || 0;
+  const completedTasks = tasks?.stats?.completed || 0;
+  const rejectedTasks = tasks?.stats?.rejected || 0;
 
-  console.log("allTasks", allTasks);
-  const pendingTasks = allTasks.filter(
-    (t: Task) => t.status === TaskStatus.PENDING,
-  );
-  const completedTasks = allTasks?.filter(
-    (t: Task) => t.status === TaskStatus.COMPLETED,
-  );
-  const rejectedTasks = allTasks?.filter(
-    (t: Task) => t.status === TaskStatus.REJECTED,
-  );
+  console.log("pendingTasks", pendingTasks);
 
   return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
-
-      {taskIsPending ? (
+    <main className="w-full">
+    {taskIsPending ? (
         <div className="flex-1 justify-center items-center">
           <Loader />
         </div>
@@ -60,7 +55,10 @@ export default function TasksPage() {
                   Assign and track user tasks
                 </p>
               </div>
-              <Button className="neon-glow">
+              <Button
+                className="neon-glow"
+                onClick={() => setIsModalOpen(true)}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Create Task
               </Button>
@@ -75,27 +73,34 @@ export default function TasksPage() {
               />
               <NeonCard
                 title="Pending"
-                value={pendingTasks?.length}
+                value={pendingTasks}
                 icon={Clock}
               />
               <NeonCard
                 title="Completed"
-                value={completedTasks?.length}
+                value={completedTasks}
                 icon={CheckCircle}
               />
               <NeonCard
                 title="Rejected"
-                value={rejectedTasks?.length}
+                value={rejectedTasks}
                 icon={XCircle}
               />
             </div>
-
-            {/* Tabs */}
+            
             {/* Data Table */}
             <TasksDataTable />
           </div>
         </main>
       )}
-    </div>
+
+      <CreateTaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+
+    </main>
+  
+
   );
 }
