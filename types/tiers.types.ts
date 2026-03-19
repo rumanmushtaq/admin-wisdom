@@ -8,4 +8,5 @@ export interface Tier {
   minTasksCompleted: number;
   minReferralCount: number;
   isActive: boolean;
+  
 }
