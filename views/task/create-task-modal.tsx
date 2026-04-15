@@ -79,12 +79,12 @@ export function CreateTaskModal({
   useEffect(() => {
     if (task) {
       form.reset({
-        title: task.title,
-        description: task.description ?? "",
-        websiteUrl: task.websiteUrl,
-        verificationDuration: String(task.verificationDuration),
+        title: task.title || "",
+        description: task.description || "",
+        websiteUrl: task.websiteUrl || "",
+        verificationDuration: String(task.verificationDuration || 60),
         date: task.date
-          ? task.date.split("T")[0]
+          ? new Date(task.date).toISOString().split("T")[0]
           : new Date().toISOString().split("T")[0],
       });
     } else {
@@ -131,7 +131,7 @@ export function CreateTaskModal({
       }
 
       createTask(
-        { ...payload, isVerified: true, createdBy: adminId },
+        { ...payload, createdBy: adminId },
         {
           onSuccess: () => {
             toast.success("Task created successfully!");

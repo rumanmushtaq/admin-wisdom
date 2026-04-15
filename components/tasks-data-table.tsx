@@ -62,7 +62,9 @@ export function TasksDataTable() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Edit modal state
-  const [editingTask, setEditingTask] = useState<Task["task"] & { _id: string } | null>(null);
+  const [editingTask, setEditingTask] = useState<
+    (Task["task"] & { _id: string }) | null
+  >(null);
 
   // Function to clear all filters
   const clearAllFilters = () => {
@@ -82,7 +84,7 @@ export function TasksDataTable() {
     page,
     limit,
     search: debouncedSearch || undefined,
-    taskStatus: statusFilter === "all" ? undefined : statusFilter,
+    taskStatus: statusFilter === "all" ? undefined : statusFilter.toUpperCase(),
     dateFrom: dateFrom || undefined,
     dateTo: dateTo || undefined,
     sortBy,
@@ -233,7 +235,11 @@ export function TasksDataTable() {
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8 p-0 hover:text-blue-500"
-                onClick={() => setEditingTask(row.original.task as Task["task"] & { _id: string })}
+                onClick={() =>
+                  setEditingTask(
+                    row.original.task as Task["task"] & { _id: string },
+                  )
+                }
               >
                 <Edit className="h-4 w-4" />
               </Button>
