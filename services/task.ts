@@ -30,6 +30,18 @@ class TaskService {
       throw error.response?.data || error.message;
     }
   }
+
+  async updateTask(id: string, payload: any) {
+    try {
+      const { data } = await HTTP_CLIENT.patch(
+        apiEndpoints.Tasks.UPDATE(id),
+        payload,
+      );
+      return data;
+    } catch (error: any) {
+      throw error.response?.data || error.message;
+    }
+  }
 }
 
 export default new TaskService();

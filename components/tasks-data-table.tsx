@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useDebounce } from "use-debounce";
+import { CreateTaskModal } from "@/views/task/create-task-modal";
 import {
   flexRender,
   getCoreRowModel,
@@ -59,6 +60,9 @@ export function TasksDataTable() {
   const [dateTo, setDateTo] = useState<string>("");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  // Edit modal state
+  const [editingTask, setEditingTask] = useState<Task["task"] & { _id: string } | null>(null);
 
   // Function to clear all filters
   const clearAllFilters = () => {
@@ -229,7 +233,7 @@ export function TasksDataTable() {
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8 p-0 hover:text-blue-500"
-                onClick={() => console.log("Edit", row.original._id)}
+                onClick={() => setEditingTask(row.original.task as Task["task"] & { _id: string })}
               >
                 <Edit className="h-4 w-4" />
               </Button>
@@ -498,6 +502,24 @@ export function TasksDataTable() {
           </Button>
         </div>
       </div>
+
+      {/* Edit Task Modal */}
+      <CreateTaskModal
+        isOpen={Boolean(editingTask)}
+        onClose={() => setEditingTask(null)}
+        task={
+          editingTask
+            ? {
+                _id: editingTask._id,
+                title: editingTask.title,
+                description: editingTask.description,
+                websiteUrl: editingTask.websiteUrl,
+                verificationDuration: editingTask.verificationDuration,
+                date: editingTask.date,
+              }
+            : null
+        }
+      />
     </div>
   );
 }

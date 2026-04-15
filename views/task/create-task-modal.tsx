@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useCreateTask } from "./useTask";
+import { useCreateTask, useUpdateTask } from "./useTask";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -36,13 +36,33 @@ const taskSchema = z.object({
 
 type TaskFormValues = z.infer<typeof taskSchema>;
 
+/** Shape of the task record passed in when editing */
+interface TaskData {
+  _id: string;
+  title: string;
+  description?: string;
+  websiteUrl: string;
+  verificationDuration: number;
+  date: string;
+}
+
 interface CreateTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Pass the existing task to switch the modal into edit mode */
+  task?: TaskData | null;
 }
 
-export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
-  const { mutate: createTask, isPending } = useCreateTask();
+export function CreateTaskModal({
+  isOpen,
+  onClose,
+  task,
+}: CreateTaskModalProps) {
+  const isEditMode = Boolean(task);
+
+  const { mutate: createTask, isPending: isCreating } = useCreateTask();
+  const { mutate: updateTask, isPending: isUpdating } = useUpdateTask();
+  const isPending = isCreating || isUpdating;
 
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
@@ -55,35 +75,75 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
     },
   });
 
-  const onSubmit = (values: TaskFormValues) => {
-    // Get admin ID from localStorage
-    const userStr =
-      typeof window !== "undefined" ? localStorage.getItem("user") : null;
-    const user = userStr ? JSON.parse(userStr) : null;
-    const adminId = user?._id;
-
-    if (!adminId) {
-      toast.error("Admin session not found. Please log in again.");
-      return;
+  // Pre-populate form when a task is provided (edit mode)
+  useEffect(() => {
+    if (task) {
+      form.reset({
+        title: task.title,
+        description: task.description ?? "",
+        websiteUrl: task.websiteUrl,
+        verificationDuration: String(task.verificationDuration),
+        date: task.date
+          ? task.date.split("T")[0]
+          : new Date().toISOString().split("T")[0],
+      });
+    } else {
+      form.reset({
+        title: "",
+        description: "",
+        websiteUrl: "",
+        verificationDuration: "60",
+        date: new Date().toISOString().split("T")[0],
+      });
     }
+  }, [task, isOpen]);
 
+  const onSubmit = (values: TaskFormValues) => {
     const payload = {
       ...values,
       verificationDuration: Number(values.verificationDuration),
-      isVerified: true,
-      createdBy: adminId,
     };
 
-    createTask(payload, {
-      onSuccess: () => {
-        toast.success("Task created successfully!");
-        form.reset();
-        onClose();
-      },
-      onError: (error: any) => {
-        toast.error(error?.message || "Failed to create task");
-      },
-    });
+    if (isEditMode && task) {
+      // --- EDIT MODE ---
+      updateTask(
+        { id: task._id, payload },
+        {
+          onSuccess: () => {
+            toast.success("Task updated successfully!");
+            onClose();
+          },
+          onError: (error: any) => {
+            toast.error(error?.message || "Failed to update task");
+          },
+        },
+      );
+    } else {
+      // --- CREATE MODE ---
+      const userStr =
+        typeof window !== "undefined" ? localStorage.getItem("user") : null;
+      const user = userStr ? JSON.parse(userStr) : null;
+      const adminId = user?._id;
+
+      if (!adminId) {
+        toast.error("Admin session not found. Please log in again.");
+        return;
+      }
+
+      createTask(
+        { ...payload, isVerified: true, createdBy: adminId },
+        {
+          onSuccess: () => {
+            toast.success("Task created successfully!");
+            form.reset();
+            onClose();
+          },
+          onError: (error: any) => {
+            toast.error(error?.message || "Failed to create task");
+          },
+        },
+      );
+    }
   };
 
   return (
@@ -91,7 +151,7 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
       <DialogContent className="sm:max-w-[500px] bg-[#0A0A0A] border-[#BFFF00]/30 text-white">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold neon-text">
-            Create New Task
+            {isEditMode ? "Edit Task" : "Create New Task"}
           </DialogTitle>
         </DialogHeader>
 
@@ -206,7 +266,7 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
                 disabled={isPending}
               >
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Task
+                {isEditMode ? "Save Changes" : "Create Task"}
               </Button>
             </DialogFooter>
           </form>

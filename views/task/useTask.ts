@@ -59,3 +59,15 @@ export const useCreateTask = () => {
     },
   });
 };
+
+export const useUpdateTask = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: any }) =>
+      taskServices.updateTask(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+};

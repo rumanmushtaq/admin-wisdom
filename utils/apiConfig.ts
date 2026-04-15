@@ -25,6 +25,7 @@ const apiEndpoints = {
   },
   Tasks: {
     GET_ALL: "/api/v1/tasks",
+    UPDATE: (id: string) => `/api/v1/tasks/${id}`,
     APPROVE: (id: string) => `/api/v1/transactions/approve/${id}`,
     REJECCT: (id: string) => `/api/v1/transactions/reject/${id}`,
   },
