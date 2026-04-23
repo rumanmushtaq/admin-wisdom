@@ -59,6 +59,21 @@ class DepositService {
       };
     }
   }
+
+  async getStats() {
+    try {
+      const res = await HTTP_CLIENT.get(apiEndpoints.Deposits.GET_STATS);
+      return {
+        success: true,
+        data: res.data,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        data: error.response?.data || error.message,
+      };
+    }
+  }
 }
 
 export default new DepositService();

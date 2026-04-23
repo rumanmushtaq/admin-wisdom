@@ -1,187 +1,212 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  LineChart,
-  Line,
   AreaChart,
   Area,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts"
+} from "recharts";
+import { TrendingUp, BarChart2, DollarSign } from "lucide-react";
 
-// Sample data for charts
-const depositTrendData = [
-  { month: "Jan", deposits: 4000, withdrawals: 2400 },
-  { month: "Feb", deposits: 3000, withdrawals: 1398 },
-  { month: "Mar", deposits: 2000, withdrawals: 9800 },
-  { month: "Apr", deposits: 2780, withdrawals: 3908 },
-  { month: "May", deposits: 1890, withdrawals: 4800 },
-  { month: "Jun", deposits: 2390, withdrawals: 3800 },
-  { month: "Jul", deposits: 3490, withdrawals: 4300 },
-]
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
-const userActivityData = [
-  { name: "Active", value: 2123, color: "#BFFF00" },
-  { name: "Inactive", value: 724, color: "#404040" },
-]
+interface TrendEntry {
+  _id: { year: number; month: number; type: string };
+  total: number;
+}
 
-const taskCompletionData = [
-  { user: "John D.", completed: 85, pending: 15 },
-  { user: "Sarah S.", completed: 92, pending: 8 },
-  { user: "Mike J.", completed: 78, pending: 22 },
-  { user: "Emily B.", completed: 88, pending: 12 },
-  { user: "David L.", completed: 95, pending: 5 },
-]
+interface DashboardChartsProps {
+  trends?: TrendEntry[];
+  completionRate?: number;
+}
 
-const referralData = [
-  { month: "Jan", earnings: 1200 },
-  { month: "Feb", earnings: 1900 },
-  { month: "Mar", earnings: 1500 },
-  { month: "Apr", earnings: 2400 },
-  { month: "May", earnings: 2100 },
-  { month: "Jun", earnings: 2800 },
-]
+function buildTrendData(trends: TrendEntry[]) {
+  const map: Record<
+    string,
+    { month: string; deposits: number; referrals: number }
+  > = {};
 
-export function DashboardCharts() {
+  trends.forEach((t) => {
+    const key = `${t._id.year}-${String(t._id.month).padStart(2, "0")}`;
+    if (!map[key]) {
+      map[key] = {
+        month: MONTH_NAMES[t._id.month - 1],
+        deposits: 0,
+        referrals: 0,
+      };
+    }
+    if (t._id.type === "PURCHASE") map[key].deposits += t.total;
+    if (t._id.type === "REFERRAL_BONUS") map[key].referrals += t.total;
+  });
+
+  return Object.values(map);
+}
+
+const tooltipStyle = {
+  contentStyle: {
+    backgroundColor: "#0d0d0d",
+    border: "1px solid rgba(191,255,0,0.3)",
+    borderRadius: "12px",
+    boxShadow: "0 0 20px rgba(191,255,0,0.1)",
+  },
+  labelStyle: { color: "#fff", fontWeight: 700 },
+  itemStyle: { color: "#ccc" },
+};
+
+export function DashboardCharts({
+  trends = [],
+  completionRate = 0,
+}: DashboardChartsProps) {
+  const trendData = buildTrendData(trends);
+
   return (
-    <div className="grid gap-6 md:grid-cols-2 mb-8">
-      {/* Deposit & Withdrawal Trends */}
-      <Card className="neon-border hover:neon-glow transition-all">
-        <CardHeader>
-          <CardTitle className="neon-text">Deposit & Withdrawal Trends</CardTitle>
+    <div className="grid gap-6 md:grid-cols-2">
+      {/* Deposit & Referral Trend */}
+      <Card className="bg-black/40 border border-white/5 backdrop-blur-3xl rounded-2xl overflow-hidden">
+        <CardHeader className="pb-0 pt-6 px-6">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="p-2 rounded-xl bg-primary/10">
+              <TrendingUp className="h-4 w-4 text-primary" />
+            </div>
+            <CardTitle className="text-sm font-semibold text-white/80">
+              Deposit &amp; Referral Trend
+            </CardTitle>
+          </div>
+          <p className="text-xs text-muted-foreground">Last 6 months</p>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={depositTrendData}>
+        <CardContent className="pt-4">
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart data={trendData}>
               <defs>
-                <linearGradient id="depositGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#BFFF00" stopOpacity={0.8} />
+                <linearGradient id="depGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#BFFF00" stopOpacity={0.25} />
                   <stop offset="95%" stopColor="#BFFF00" stopOpacity={0} />
                 </linearGradient>
-                <linearGradient id="withdrawalGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#666666" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#666666" stopOpacity={0} />
+                <linearGradient id="refGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#60a5fa" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis dataKey="month" stroke="#999" />
-              <YAxis stroke="#999" />
-              <Tooltip
-                contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #BFFF00", borderRadius: "8px" }}
-                labelStyle={{ color: "#fff" }}
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="rgba(255,255,255,0.05)"
               />
-              <Legend />
+              <XAxis dataKey="month" stroke="#555" tick={{ fontSize: 11 }} />
+              <YAxis
+                stroke="#555"
+                tick={{ fontSize: 11 }}
+                tickFormatter={(v) => `$${v}`}
+              />
+              <Tooltip {...tooltipStyle} />
+              <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
               <Area
                 type="monotone"
                 dataKey="deposits"
                 stroke="#BFFF00"
                 strokeWidth={2}
-                fill="url(#depositGradient)"
+                fill="url(#depGrad)"
                 name="Deposits"
               />
               <Area
                 type="monotone"
-                dataKey="withdrawals"
-                stroke="#666"
+                dataKey="referrals"
+                stroke="#60a5fa"
                 strokeWidth={2}
-                fill="url(#withdrawalGradient)"
-                name="Withdrawals"
+                fill="url(#refGrad)"
+                name="Referrals"
               />
             </AreaChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* User Activity Pie Chart */}
-      <Card className="neon-border hover:neon-glow transition-all">
-        <CardHeader>
-          <CardTitle className="neon-text">User Activity</CardTitle>
+      {/* Task Completion Rate */}
+      <Card className="bg-black/40 border border-white/5 backdrop-blur-3xl rounded-2xl overflow-hidden">
+        <CardHeader className="pb-0 pt-6 px-6">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="p-2 rounded-xl bg-primary/10">
+              <BarChart2 className="h-4 w-4 text-primary" />
+            </div>
+            <CardTitle className="text-sm font-semibold text-white/80">
+              Task Completion Rate
+            </CardTitle>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Overall platform performance
+          </p>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={userActivityData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={100}
-                paddingAngle={5}
-                dataKey="value"
-                label={(entry) => `${entry.name}: ${entry.value}`}
-                // labelStyle={{ fill: "#fff", fontSize: "12px" }}
-              >
-                {userActivityData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #BFFF00", borderRadius: "8px" }}
+        <CardContent className="pt-8 flex flex-col items-center justify-center gap-4">
+          {/* Radial progress */}
+          <div className="relative w-48 h-48">
+            <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
+              <circle
+                cx="60"
+                cy="60"
+                r="52"
+                fill="none"
+                stroke="rgba(255,255,255,0.05)"
+                strokeWidth="12"
               />
-            </PieChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Task Completion Overview */}
-      <Card className="neon-border hover:neon-glow transition-all">
-        <CardHeader>
-          <CardTitle className="neon-text">Task Completion Rate</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={taskCompletionData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis type="number" stroke="#999" />
-              <YAxis dataKey="user" type="category" stroke="#999" width={80} />
-              <Tooltip
-                contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #BFFF00", borderRadius: "8px" }}
-              />
-              <Legend />
-              <Bar dataKey="completed" stackId="a" fill="#BFFF00" name="Completed" />
-              <Bar dataKey="pending" stackId="a" fill="#404040" name="Pending" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Referral Network Stats */}
-      <Card className="neon-border hover:neon-glow transition-all">
-        <CardHeader>
-          <CardTitle className="neon-text">Referral Earnings Trend</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={referralData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis dataKey="month" stroke="#999" />
-              <YAxis stroke="#999" />
-              <Tooltip
-                contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #BFFF00", borderRadius: "8px" }}
-              />
-              <Line
-                type="monotone"
-                dataKey="earnings"
+              <circle
+                cx="60"
+                cy="60"
+                r="52"
+                fill="none"
                 stroke="#BFFF00"
-                strokeWidth={3}
-                dot={{ fill: "#BFFF00", r: 5 }}
-                activeDot={{ r: 8, fill: "#BFFF00", stroke: "#0A0A0A", strokeWidth: 2 }}
-                name="Earnings ($)"
+                strokeWidth="12"
+                strokeLinecap="round"
+                strokeDasharray={`${2 * Math.PI * 52}`}
+                strokeDashoffset={`${2 * Math.PI * 52 * (1 - completionRate / 100)}`}
+                style={{ transition: "stroke-dashoffset 1s ease" }}
               />
-            </LineChart>
-          </ResponsiveContainer>
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-3xl font-black text-primary">
+                {completionRate.toFixed(0)}%
+              </span>
+              <span className="text-xs text-muted-foreground mt-1">
+                Complete
+              </span>
+            </div>
+          </div>
+          <div className="flex gap-6 text-center">
+            <div>
+              <p className="text-xs text-muted-foreground">Completed</p>
+              <p className="text-sm font-bold text-primary">
+                {completionRate.toFixed(0)}%
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Remaining</p>
+              <p className="text-sm font-bold text-white/60">
+                {(100 - completionRate).toFixed(0)}%
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

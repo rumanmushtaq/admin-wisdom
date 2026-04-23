@@ -22,7 +22,7 @@ export enum WithdrawalStatus {
 
 export interface Withdraws {
   _id: string;
-  user: {
+  userId: {
     _id: string;
     name: string;
     email: string;
@@ -36,6 +36,8 @@ export interface Withdraws {
     firstName: string;
     lastName: string;
   };
+  walletId: string;
+  createdAt: string;
   amount: number;
   binancePayId: string;
   status: WithdrawalStatus;

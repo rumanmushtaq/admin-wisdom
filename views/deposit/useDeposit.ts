@@ -3,9 +3,11 @@
 import depositService from "@/services/deposit";
 import { Deposit } from "@/types/deposit.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { HTTP_CLIENT } from "@/utils/axiosClient";
+import apiEndpoints from "@/utils/apiConfig";
 
 export const useDeposit = (params: any) => {
-  const { page = 1, limit = 10, sortBy, sortOrder, search, isActive } = params;
+  const { page = 1, limit = 10, sortBy, sortOrder, search, status } = params;
 
   const {
     data: deposits,
@@ -13,7 +15,7 @@ export const useDeposit = (params: any) => {
     refetch: depositRefetch,
     isPending: depositIsPending,
   } = useQuery({
-    queryKey: ["deposits", page, search, limit, sortBy, sortOrder, isActive],
+    queryKey: ["deposits", page, search, limit, sortBy, sortOrder, status],
     queryFn: () =>
       depositService.getDeposits({
         page,
@@ -21,11 +23,20 @@ export const useDeposit = (params: any) => {
         sortBy,
         sortOrder,
         search,
+        status,
       }),
     staleTime: 5000,
   });
 
   return { deposits, depositStatus, depositRefetch, depositIsPending };
+};
+
+export const useDepositStats = () => {
+  return useQuery({
+    queryKey: ["deposit-stats"],
+    queryFn: () => depositService.getStats(),
+    staleTime: 5000,
+  });
 };
 
 export const useApproveDeposit = () => {
@@ -55,13 +66,13 @@ export const useApproveDeposit = () => {
               }),
             },
           };
-        }
+        },
       );
 
       // ✅ Update detail cache
       queryClient.setQueriesData(
         { queryKey: ["deposit-detail", updatedPackage.id] },
-        updatedPackage?.data
+        updatedPackage?.data,
       );
     },
   });
@@ -94,14 +105,29 @@ export const useRejectDeposit = () => {
               }),
             },
           };
-        }
+        },
       );
 
       // ✅ Update detail cache
       queryClient.setQueriesData(
         { queryKey: ["deposit-detail", updatedPackage.id] },
-        updatedPackage?.data
+        updatedPackage?.data,
       );
+    },
+  });
+};
+
+export const useSeedTransactions = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () =>
+      HTTP_CLIENT.post(
+        apiEndpoints.Deposits.GET_STATS.replace("global-stats", "seed"),
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deposits"] });
+      queryClient.invalidateQueries({ queryKey: ["deposit-stats"] });
     },
   });
 };

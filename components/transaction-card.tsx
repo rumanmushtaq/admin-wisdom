@@ -4,166 +4,158 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Check, X, Eye } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Check, Clock, Eye } from "lucide-react";
 import { Deposit } from "@/types/deposit.types";
 import { ShareStatus } from "@/views/deposit/types";
 import {
   useApproveDeposit,
   useRejectDeposit,
 } from "@/views/deposit/useDeposit";
+import { cn } from "@/lib/utils";
 
 interface TransactionCardProps {
   deposit: Deposit;
-  walletAddress?: string;
 }
 
 export function TransactionCard({ deposit }: TransactionCardProps) {
-  const {
-    user,
-    amount,
-    type,
-    transactionId,
-    image,
-    status,
-    balancebefore,
-    createdAt,
-    _id,
-  } = deposit;
+  const { user, amount, transactionId, image, status, createdAt, _id } =
+    deposit;
 
   const approveMutation = useApproveDeposit();
   const rejectMutation = useRejectDeposit();
+
+  const handleApprove = () => {
+    if (_id) {
+      approveMutation.mutate({ id: _id });
+    }
+  };
+
+  const handleReject = () => {
+    if (_id) {
+      rejectMutation.mutate({ id: _id });
+    }
+  };
+
   return (
-    <Card className="neon-border hover:neon-glow transition-all">
-      <CardContent className="p-6">
-        <div className="flex flex-col gap-4">
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 border neon-border">
-                <AvatarFallback className="bg-secondary">
-                  {user.firstName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold">{user.firstName}</p>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
-              </div>
-            </div>
-            <Badge
-              variant={
-                status === "approved"
-                  ? "default"
-                  : status === "pending"
-                    ? "secondary"
-                    : "destructive"
-              }
-              className={
-                status === "approved"
-                  ? "bg-primary text-primary-foreground"
-                  : ""
-              }
-            >
-              {status}
-            </Badge>
-          </div>
+    <Card className="relative bg-[#080808] border-white/[0.02] hover:border-primary/20 hover:bg-[#0A0A0A] transition-all duration-500 group overflow-hidden">
+      {/* Decorative Gradient Background */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[80px] rounded-full group-hover:bg-primary/10 transition-colors" />
 
-          {/* Details */}
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Amount</span>
-              <span className="font-bold text-primary text-lg">{amount}$</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">
-                Transaction ID
-              </span>
-              <span className="text-sm font-mono">{transactionId}</span>
-            </div>
-            {/* {walletAddress && (
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Wallet Address
-                </span>
-                <span className="text-sm font-mono truncate max-w-[200px]">
-                  {walletAddress}
-                </span>
+      <CardContent className="p-0">
+        <div className="flex flex-col lg:flex-row lg:items-center">
+          {/* User Info Section */}
+          <div className="p-6 lg:w-1/4 border-b lg:border-b-0 lg:border-r border-white/[0.03]">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Avatar className="h-12 w-12 border border-white/[0.05] group-hover:border-primary/40 transition-colors duration-500">
+                  <AvatarFallback className="bg-neutral-900 text-muted-foreground font-bold uppercase">
+                    {user.firstName?.[0]}
+                    {user.lastName?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+                {status === "approved" && (
+                  <div className="absolute -bottom-1 -right-1 bg-primary text-black rounded-full p-0.5 shadow-lg">
+                    <Check className="h-3 w-3 bold" />
+                  </div>
+                )}
               </div>
-            )} */}
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Time</span>
-              <span className="text-sm">{createdAt}</span>
+              <div className="min-w-0">
+                <p className="font-bold text-white truncate">
+                  {user.firstName} {user.lastName}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {user.email}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Screenshot */}
-          {image && (
-            <a
-              href={image}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full"
-            >
-              <Button
+          {/* Transaction Metadata */}
+          <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-8 p-6 lg:px-10">
+            <div className="space-y-1">
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/40">
+                Amount
+              </p>
+              <p className="text-xl font-black text-primary">
+                ${(amount ?? 0).toLocaleString()}
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/40">
+                Reference
+              </p>
+              <p className="text-sm font-mono text-muted-foreground group-hover:text-white transition-colors">
+                #{transactionId?.slice(-8) ?? "N/A"}
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/40">
+                Status
+              </p>
+              <Badge
                 variant="outline"
-                size="sm"
-                className="w-full neon-border bg-transparent"
+                className={cn(
+                  "border-none bg-transparent p-0 text-xs font-black uppercase tracking-widest",
+                  status === "approved"
+                    ? "text-green-500"
+                    : status === "pending"
+                      ? "text-yellow-500"
+                      : "text-red-500",
+                )}
               >
-                <Eye className="mr-2 h-4 w-4" />
-                View Screenshot
-              </Button>
-            </a>
-          )}
-
-          {/* Actions */}
-          {status === ShareStatus.PENDING && (
-            <div className="flex gap-2">
-              <Button
-                className="flex-1 neon-glow cursor-pointer"
-                size="sm"
-                onClick={() => {
-                  if (_id) {
-                    approveMutation.mutate(
-                      { id: _id },
-                      {
-                        onSuccess: () => {},
-                      },
-                    );
-                  }
-                }}
-              >
-                <Check className="mr-2 h-4 w-4" />
-                Approve
-              </Button>
-              <Button
-                variant="destructive"
-                className="flex-1 cursor-pointer"
-                size="sm"
-                onClick={() => {
-                  if (_id) {
-                    rejectMutation.mutate(
-                      { id: _id },
-                      {
-                        onSuccess: () => {},
-                      },
-                    );
-                  }
-                }}
-              >
-                <X className="mr-2 h-4 w-4" />
-                Reject
-              </Button>
+                {status}
+              </Badge>
             </div>
-          )}
+
+            <div className="space-y-1">
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/40">
+                Timestamp
+              </p>
+              <p className="text-sm text-muted-foreground flex items-center gap-1.5 font-medium">
+                <Clock className="h-3 w-3" />
+                {createdAt
+                  ? new Date(createdAt).toLocaleDateString()
+                  : "Pending"}
+              </p>
+            </div>
+          </div>
+
+          {/* Action Area */}
+          <div className="p-4 lg:p-6 bg-white/[0.01] border-t lg:border-t-0 lg:border-l border-white/[0.03] flex items-center justify-center gap-4">
+            {image && (
+              <a href={image} target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all"
+                >
+                  <Eye className="h-5 w-5" />
+                </Button>
+              </a>
+            )}
+
+            {status === ShareStatus.PENDING && (
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all px-6 font-bold"
+                  onClick={handleReject}
+                >
+                  Reject
+                </Button>
+                <Button
+                  size="sm"
+                  className="rounded-full bg-primary text-black font-black hover:scale-105 transition-all px-8"
+                  onClick={handleApprove}
+                >
+                  Approve
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

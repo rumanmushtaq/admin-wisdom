@@ -38,6 +38,42 @@ class WithdrawsService {
       };
     }
   }
+
+  /* =========================
+     GET STATS
+  ========================== */
+  async getStats(): Promise<ApiResponse<any>> {
+    try {
+      const res = await HTTP_CLIENT.get(apiEndpoints.Withdraws.GET_STATS);
+      return {
+        success: true,
+        data: res.data,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        data: error.response?.data || error.message,
+      };
+    }
+  }
+
+  /* =========================
+     SEED DUMMY DATA
+  ========================== */
+  async seed(): Promise<ApiResponse<any>> {
+    try {
+      const res = await HTTP_CLIENT.post(apiEndpoints.Withdraws.SEED);
+      return {
+        success: true,
+        data: res.data,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        data: error.response?.data || error.message,
+      };
+    }
+  }
 }
 
 export default new WithdrawsService();

@@ -22,6 +22,7 @@ const apiEndpoints = {
     GET_ALL: "/api/v1/transactions",
     APPROVE: (id: string) => `/api/v1/transactions/approve/${id}`,
     REJECCT: (id: string) => `/api/v1/transactions/reject/${id}`,
+    GET_STATS: "/api/v1/transactions/global-stats",
   },
   Tasks: {
     GET_ALL: "/api/v1/tasks",
@@ -54,11 +55,14 @@ const apiEndpoints = {
   Dashboard: {
     GET_ALL: "/api/v1/dashboard",
     STATS: "/api/v1/dashboard/stats",
+    GET_ADMIN_STATS: "/api/v1/dashboard/admin",
   },
   Withdraws: {
     GET_ALL: "/api/v1/withdrawals/all",
     APPROVE: (id: string) => `/api/v1/withdrawals/approve/${id}`,
     REJECCT: (id: string) => `/api/v1/withdrawals/reject/${id}`,
+    GET_STATS: "/api/v1/withdrawals/stats",
+    SEED: "/api/v1/withdrawals/seed",
   },
 };
 

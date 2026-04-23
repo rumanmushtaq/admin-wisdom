@@ -9,20 +9,20 @@ export interface Deposit {
   balancebefore: number;
   createdAt?: string;
   updatedAt?: string;
-  user : {
-    _id : string;
-    email : string;
-    firstName : string;
-    lastName : string;
-    role : string;
-  }
+  user: {
+    _id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+  };
 }
 
 export interface GetDepositsParams {
   page: number;
   limit: number;
   search?: string;
-  isActive?: string;
+  status?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
