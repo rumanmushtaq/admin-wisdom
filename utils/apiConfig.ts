@@ -7,6 +7,7 @@ const apiEndpoints = {
     GET_ALL: `/api/v1/users`,
     GET_ONE: (id: string) => `/api/v1/users/details/${id}`,
     RESTORE: `/api/v1/users/restore`,
+    SHARE_CREDITS: (id: string) => `/api/v1/users/${id}/share-credits`,
   },
   Referral: {
     GET_ALL_CHAINS: "/api/v1/referral/all-chains",

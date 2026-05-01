@@ -74,6 +74,34 @@ class DepositService {
       };
     }
   }
+
+  async shareCredits(
+    userId: string,
+    amount: number,
+    note?: string,
+    transactionId?: string,
+  ) {
+    try {
+      const res = await HTTP_CLIENT.post(
+        apiEndpoints.Users.SHARE_CREDITS(userId),
+        {
+          amount,
+          note,
+          transactionId,
+        },
+      );
+
+      return {
+        success: true,
+        data: res.data,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        data: error.response?.data || error.message,
+      };
+    }
+  }
 }
 
 export default new DepositService();

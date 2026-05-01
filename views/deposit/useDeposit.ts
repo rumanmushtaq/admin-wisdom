@@ -131,3 +131,26 @@ export const useSeedTransactions = () => {
     },
   });
 };
+
+export const useShareCredits = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      amount,
+      note,
+      transactionId,
+    }: {
+      userId: string;
+      amount: number;
+      note?: string;
+      transactionId?: string;
+    }) => depositService.shareCredits(userId, amount, note, transactionId),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deposits"] });
+      queryClient.invalidateQueries({ queryKey: ["deposit-stats"] });
+    },
+  });
+};
