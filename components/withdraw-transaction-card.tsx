@@ -163,7 +163,11 @@ export function TransactionCard({ withdrawal }: TransactionCardProps) {
                 </span>
               </div>
               <p className="text-sm font-mono text-white/80 truncate max-w-[120px]">
-                {binancePayId || walletId || "N/A"}
+                {binancePayId ||
+                  (typeof walletId === "object"
+                    ? (walletId as any)?.address || (walletId as any)?._id
+                    : walletId) ||
+                  "N/A"}
               </p>
             </div>
 
