@@ -37,6 +37,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -44,8 +54,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Task } from "@/types/task.types";
-import { useTask } from "@/views/task/useTask";
+import { useTask, useDeleteTask } from "@/views/task/useTask";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 export function TasksDataTable() {
   /* =========================
@@ -90,6 +101,23 @@ export function TasksDataTable() {
     sortBy,
     sortOrder,
   });
+
+  const { mutate: deleteTask, isPending: isDeleting } = useDeleteTask();
+  const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
+
+  const confirmDelete = () => {
+    if (!deleteTaskId) return;
+    deleteTask(deleteTaskId, {
+      onSuccess: () => {
+        toast.success("Task deleted successfully");
+        setDeleteTaskId(null);
+      },
+      onError: (error: any) => {
+        toast.error(error?.message || "Failed to delete task");
+        setDeleteTaskId(null);
+      },
+    });
+  };
 
   const allTasks = useMemo(() => tasks?.data ?? [], [tasks?.data]);
   const totalTasks = tasks?.total || 0;
@@ -242,6 +270,15 @@ export function TasksDataTable() {
                 }
               >
                 <Edit className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:text-red-500"
+                onClick={() => setDeleteTaskId(row.original.task._id)}
+                disabled={isDeleting}
+              >
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           );
@@ -526,6 +563,35 @@ export function TasksDataTable() {
             : null
         }
       />
+
+      {/* Delete Confirmation Modal */}
+      <AlertDialog
+        open={Boolean(deleteTaskId)}
+        onOpenChange={(open) => !open && setDeleteTaskId(null)}
+      >
+        <AlertDialogContent className="bg-black/90 border-[#BFFF00]/30 backdrop-blur-xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[#BFFF00] text-xl">
+              Are you absolutely sure?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              This action cannot be undone. This will soft-delete the task and
+              remove it from the management table.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-gray-700 text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-500 hover:bg-red-600 text-white border-none transition-colors"
+            >
+              Confirm Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

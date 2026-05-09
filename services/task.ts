@@ -42,6 +42,15 @@ class TaskService {
       throw error.response?.data || error.message;
     }
   }
+
+  async deleteTask(id: string) {
+    try {
+      const { data } = await HTTP_CLIENT.delete(apiEndpoints.Tasks.DELETE(id));
+      return data;
+    } catch (error: any) {
+      throw error.response?.data || error.message;
+    }
+  }
 }
 
 export default new TaskService();
