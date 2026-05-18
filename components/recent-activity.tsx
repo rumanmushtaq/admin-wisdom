@@ -76,7 +76,7 @@ export function RecentActivity({
             {activities.slice(0, 12).map((item, i) => {
               const user = item.data?.userId;
               const userName = user?.firstName
-                ? `${user.firstName} ${user.lastName || ""}`.trim()
+                ? `${user?.firstName} ${user?.lastName || ""}`.trim()
                 : user?.email || "Unknown User";
               const initials = userName
                 .split(" ")

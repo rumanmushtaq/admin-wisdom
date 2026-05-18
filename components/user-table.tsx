@@ -158,7 +158,7 @@ export function UserTable() {
         cell: ({ row }) => (
           <div className="flex">
             <p className="font-medium">
-              {row.original.firstName} {row.original.lastName}
+              {row.original?.firstName} {row.original?.lastName}
             </p>
           </div>
         ),

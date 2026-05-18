@@ -18,24 +18,24 @@ function ReferralNode({ user, level = 0 }: ReferralNodeProps) {
         <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 neon-border bg-secondary flex-shrink-0">
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-              {(user.firstName?.[0] || "") + (user.lastName?.[0] || "") ||
-                user.username?.[0] ||
+              {(user?.firstName?.[0] || "") + (user?.lastName?.[0] || "") ||
+                user?.username?.[0] ||
                 "?"}
             </AvatarFallback>
           </Avatar>
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-medium truncate">
-            {user.firstName} {user.lastName}{" "}
-            {user.username && `(${user.username})`}
+            {user?.firstName} {user?.lastName}{" "}
+            {user?.username && `(${user?.username})`}
           </p>
-          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+          <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
           <div className="flex gap-4 mt-1">
             <span className="text-xs text-primary font-semibold">
-              Earnings: ${user.totalReferralEarnings?.toFixed(2) || "0.00"}
+              Earnings: ${user?.totalReferralEarnings?.toFixed(2) || "0.00"}
             </span>
             <span className="text-xs text-muted-foreground">
-              {user.referrals?.length || 0} referrals
+              {user?.referrals?.length || 0} referrals
             </span>
           </div>
         </div>

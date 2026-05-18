@@ -54,8 +54,8 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
                 <div className="relative">
                   <Avatar className="h-12 w-12 border border-white/[0.05] group-hover:border-primary/40 transition-colors duration-500">
                     <AvatarFallback className="bg-neutral-900 text-muted-foreground font-bold uppercase">
-                      {user.firstName?.[0]}
-                      {user.lastName?.[0]}
+                      {user?.firstName?.[0]}
+                      {user?.lastName?.[0]}
                     </AvatarFallback>
                   </Avatar>
                   {status === "approved" && (
@@ -66,10 +66,10 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
                 </div>
                 <div className="min-w-0">
                   <p className="font-bold text-white truncate">
-                    {user.firstName} {user.lastName}
+                    {user?.firstName} {user?.lastName}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
-                    {user.email}
+                    {user?.email}
                   </p>
                 </div>
               </div>

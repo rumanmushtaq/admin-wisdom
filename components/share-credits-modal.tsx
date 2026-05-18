@@ -42,15 +42,15 @@ export function ShareCreditsModal({
 
     shareMutation.mutate(
       {
-        userId: deposit.user._id,
+        userId: deposit?.user?._id,
         amount: numAmount,
         note: note || undefined,
-        transactionId: deposit._id,
+        transactionId: deposit?._id,
       },
       {
         onSuccess: () => {
           toast.success(
-            `Successfully shared ${numAmount} credits with ${deposit.user.firstName}`,
+            `Successfully shared ${numAmount} credits with ${deposit?.user?.firstName}`,
           );
           onClose();
           setAmount("");
@@ -78,7 +78,7 @@ export function ShareCreditsModal({
           <DialogDescription className="text-muted-foreground">
             Award manual credits to{" "}
             <span className="text-primary font-bold">
-              {deposit.user.firstName} {deposit.user.lastName}
+              {deposit?.user?.firstName} {deposit?.user?.lastName}
             </span>
             .
           </DialogDescription>

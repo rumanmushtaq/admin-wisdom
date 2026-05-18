@@ -94,7 +94,7 @@ export default function ReferralsPage() {
             </h1>
             <p className="text-muted-foreground">
               {selectedUser
-                ? `Viewing referral chain for ${selectedUser.firstName} ${selectedUser.lastName}`
+                ? `Viewing referral chain for ${selectedUser?.firstName} ${selectedUser?.lastName}`
                 : "Track and manage user referral networks"}
             </p>
           </div>
@@ -165,18 +165,18 @@ export default function ReferralsPage() {
                                 <div className="flex items-center gap-3">
                                   <Avatar className="h-8 w-8 border neon-border">
                                     <AvatarFallback className="bg-secondary text-xs">
-                                      {(item.firstName?.[0] || "") +
-                                        (item.lastName?.[0] || "") ||
-                                        item.username?.[0] ||
+                                      {(item?.firstName?.[0] || "") +
+                                        (item?.lastName?.[0] || "") ||
+                                        item?.username?.[0] ||
                                         "?"}
                                     </AvatarFallback>
                                   </Avatar>
                                   <div>
                                     <p className="font-medium text-sm">
-                                      {item.firstName} {item.lastName}
+                                      {item?.firstName} {item?.lastName}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
-                                      {item.email}
+                                      {item?.email}
                                     </p>
                                   </div>
                                 </div>
