@@ -1,20 +1,19 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { ArrowRight, Eye, EyeOff, Loader, Lock, Mail } from "lucide-react"
-import { Controller } from "react-hook-form"
-import useLogin from "./useLogin"
-
+} from "@/components/ui/card";
+import { ArrowRight, Eye, EyeOff, Loader, Lock, Mail } from "lucide-react";
+import { Controller } from "react-hook-form";
+import useLogin from "./useLogin";
 
 export default function LoginPage() {
   const {
@@ -25,7 +24,7 @@ export default function LoginPage() {
     isPending,
     showPassword,
     setShowPassword,
-  } = useLogin()
+  } = useLogin();
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#0A0A0A]">
@@ -37,8 +36,12 @@ export default function LoginPage() {
 
       <Card className="w-full max-w-md relative z-10 neon-border bg-black/50 backdrop-blur-sm">
         <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto w-16 h-16 rounded-full bg-[#BFFF00]/10 flex items-center justify-center neon-glow-sm">
-            <Lock className="w-8 h-8 text-[#BFFF00]" />
+          <div className="flex justify-center mb-2">
+            <img
+              src="/Logo-2.png"
+              alt="Admin Logo"
+              className="h-16 w-auto object-contain"
+            />
           </div>
           <CardTitle className="text-3xl font-bold neon-text">
             Admin Login
@@ -70,9 +73,7 @@ export default function LoginPage() {
                 />
               </div>
               {errors.email && (
-                <p className="text-red-500 text-xs">
-                  {errors.email.message}
-                </p>
+                <p className="text-red-500 text-xs">{errors.email.message}</p>
               )}
             </div>
 
@@ -126,9 +127,7 @@ export default function LoginPage() {
                       onChange={field.onChange}
                       className="w-4 h-4 rounded border-[#BFFF00]/30"
                     />
-                    <span className="text-muted-foreground">
-                      Remember me
-                    </span>
+                    <span className="text-muted-foreground">Remember me</span>
                   </label>
                 )}
               />
@@ -142,11 +141,11 @@ export default function LoginPage() {
               className="w-full neon-glow cursor-pointer"
               disabled={isPending}
             >
-               Sign In {isPending ? <Loader /> : <ArrowRight />} 
+              Sign In {isPending ? <Loader /> : <ArrowRight />}
             </Button>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Users,
@@ -16,10 +16,9 @@ import {
   Menu,
   X,
   Zap,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import AdminSidebarFooter from "@/components/molecules/sidebar/footer"
-
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import AdminSidebarFooter from "@/components/molecules/sidebar/footer";
 
 const navItems = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
@@ -30,13 +29,12 @@ const navItems = [
   { href: "/admin/tasks", icon: ClipboardCheck, label: "Tasks" },
   { href: "/admin/referrals", icon: UserPlus, label: "Referrals" },
   { href: "/admin/settings", icon: Settings, label: "Settings" },
-]
+];
 
 export function AdminSidebar() {
-  const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  
   return (
     <>
       {/* Mobile menu button */}
@@ -59,14 +57,17 @@ export function AdminSidebar() {
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center gap-2 border-b neon-border px-6">
-            <Zap className="h-6 w-6 text-primary neon-glow" />
-            <span className="text-xl font-bold neon-text">Crypto Admin</span>
+            <img
+              src="/Logo-2.png"
+              alt="Admin Logo"
+              className="h-8 w-auto object-contain"
+            />
           </div>
 
           {/* Navigation */}
           <nav className="flex-1 space-y-1 p-4">
             {navItems.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
@@ -82,12 +83,12 @@ export function AdminSidebar() {
                   <item.icon className="h-5 w-5" />
                   {item.label}
                 </Link>
-              )
+              );
             })}
           </nav>
 
           {/* Footer */}
-            <AdminSidebarFooter />
+          <AdminSidebarFooter />
         </div>
       </aside>
 
@@ -99,5 +100,5 @@ export function AdminSidebar() {
         />
       )}
     </>
-  )
+  );
 }
