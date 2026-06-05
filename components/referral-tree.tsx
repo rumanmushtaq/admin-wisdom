@@ -32,7 +32,7 @@ function ReferralNode({ user, level = 0 }: ReferralNodeProps) {
           <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
           <div className="flex gap-4 mt-1">
             <span className="text-xs text-primary font-semibold">
-              Earnings: ${user?.totalReferralEarnings?.toFixed(2) || "0.00"}
+              Earnings: ${user?.referralEarnings?.toFixed(2) || "0.00"}
             </span>
             <span className="text-xs text-muted-foreground">
               {user?.referrals?.length || 0} referrals
@@ -52,6 +52,7 @@ function ReferralNode({ user, level = 0 }: ReferralNodeProps) {
 }
 
 export function ReferralTree({ data }: { data: any[] }) {
+  console.log("data", data);
   const topLevelReferrers =
     data?.filter((u) => u.referrals && u.referrals.length > 0) || [];
 

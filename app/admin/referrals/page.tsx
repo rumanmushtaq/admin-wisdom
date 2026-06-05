@@ -69,7 +69,7 @@ export default function ReferralsPage() {
     const count = (users: any[]) => {
       users.forEach((u) => {
         totalRef += u.referrals?.length || 0;
-        totalEarn += u.totalReferralEarnings || 0;
+        totalEarn += u.referralEarnings || 0;
         if (u.referrals) count(u.referrals);
       });
     };
@@ -83,6 +83,8 @@ export default function ReferralsPage() {
         allReferrers.length > 0 ? totalEarn / allReferrers.length : 0,
     };
   }, [referralData, allReferrers]);
+
+  console.log("allReferrers", allReferrers);
 
   return (
       <main className="flex-1 lg:ml-64">
@@ -182,12 +184,12 @@ export default function ReferralsPage() {
                                 </div>
                               </TableCell>
                               <TableCell className="font-medium">
-                                {item.referralCount || 0}
+                                {item.referrals.length || 0}
                               </TableCell>
                               <TableCell>{item.activeReferrals || 0}</TableCell>
                               <TableCell className="font-semibold text-primary">
                                 $
-                                {item.totalReferralEarnings?.toFixed(2) ||
+                                {item.referralEarnings?.toFixed(2) ||
                                   "0.00"}
                               </TableCell>
                               <TableCell className="text-right">

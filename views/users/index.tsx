@@ -17,10 +17,6 @@ export default function Users() {
               Manage and monitor all user accounts
             </p>
           </div>
-          <Button className="neon-glow">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Add User
-          </Button>
         </div>
 
         {/* User Table */}
