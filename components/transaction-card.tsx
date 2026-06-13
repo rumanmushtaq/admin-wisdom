@@ -20,7 +20,7 @@ interface TransactionCardProps {
 }
 
 export function TransactionCard({ deposit }: TransactionCardProps) {
-  const { user, amount, transactionId, image, status, createdAt, _id } =
+  const { user, amount, transactionId, image, status, createdAt, _id, type } =
     deposit;
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -76,13 +76,22 @@ export function TransactionCard({ deposit }: TransactionCardProps) {
             </div>
 
             {/* Transaction Metadata */}
-            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-8 p-6 lg:px-10">
+            <div className="flex-1 grid grid-cols-2 lg:grid-cols-5 gap-8 p-6 lg:px-10">
               <div className="space-y-1">
                 <p className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/40">
                   Amount
                 </p>
                 <p className="text-xl font-black text-primary">
                   ${(amount ?? 0).toLocaleString()}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/40">
+                  Type
+                </p>
+                <p className="text-sm font-mono text-muted-foreground group-hover:text-white transition-colors">
+                  {type ?? "N/A"}
                 </p>
               </div>
 
