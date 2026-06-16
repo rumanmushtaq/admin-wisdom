@@ -203,14 +203,6 @@ export default function ReferralsPage() {
                                   >
                                     <Eye className="h-4 w-4" />
                                   </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                    title="Edit user"
-                                  >
-                                    <Edit className="h-4 w-4" />
-                                  </Button>
                                 </div>
                               </TableCell>
                             </TableRow>
