@@ -37,61 +37,76 @@ export default function TasksPage() {
   console.log("pendingTasks", pendingTasks);
 
   return (
-    <main className="w-full">
-    {taskIsPending ? (
-        <div className="flex-1 justify-center items-center">
-          <Loader />
+    <main className="flex-1 w-full lg:ml-64 bg-[#020202] min-h-screen selection:bg-primary/30 selection:text-white">
+      {taskIsPending ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader className="h-10 w-10 animate-spin text-primary/20" />
         </div>
       ) : (
-        <main className="flex-1 lg:ml-64">
-          <div className="p-6 lg:p-8">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h1 className="text-4xl font-bold neon-text mb-2">
-                  Tasks Management
-                </h1>
-                <p className="text-muted-foreground">
-                  Assign and track user tasks
-                </p>
+        <div className="p-8 lg:p-12 max-w-[1400px] mx-auto space-y-12">
+          {/* Header Section */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <ClipboardCheck className="h-6 w-6 text-primary" />
+                </div>
+                <span className="text-[10px] uppercase tracking-[0.4em] font-black text-primary/60">
+                  Operations Center
+                </span>
               </div>
+              <h1 className="text-6xl font-black tracking-tight text-white leading-tight">
+                Operations <span className="text-primary">.</span> Tasks
+              </h1>
+              <p className="text-muted-foreground/60 max-w-xl text-lg font-medium leading-relaxed">
+                Assign, monitor, and track user tasks and progress workflows.
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-3">
               <Button
-                className="neon-glow"
                 onClick={() => setIsModalOpen(true)}
+                className="h-14 px-8 bg-primary hover:bg-primary/80 text-black font-bold rounded-2xl shadow-[0_0_30px_rgba(209,255,77,0.1)] transition-all"
               >
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="mr-2 h-5 w-5" />
                 Create Task
               </Button>
             </div>
+          </div>
 
-            {/* Stats */}
-            <div className="grid gap-4 md:grid-cols-4 mb-8">
-              <NeonCard
-                title="Total Tasks"
-                value={totalTasks}
-                icon={ClipboardCheck}
-              />
-              <NeonCard
-                title="Pending"
-                value={pendingTasks}
-                icon={Clock}
-              />
-              <NeonCard
-                title="Completed"
-                value={completedTasks}
-                icon={CheckCircle}
-              />
-              <NeonCard
-                title="Rejected"
-                value={rejectedTasks}
-                icon={XCircle}
-              />
-            </div>
-            
-            {/* Data Table */}
+          {/* Stats Grid */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 relative">
+            <NeonCard
+              title="Total Tasks"
+              value={totalTasks}
+              icon={ClipboardCheck}
+              className="bg-primary/5 border-primary/20"
+            />
+            <NeonCard
+              title="Pending"
+              value={pendingTasks}
+              icon={Clock}
+              className="bg-yellow-500/5 border-yellow-500/20"
+            />
+            <NeonCard
+              title="Completed"
+              value={completedTasks}
+              icon={CheckCircle}
+              className="bg-green-500/5 border-green-500/20"
+            />
+            <NeonCard
+              title="Rejected"
+              value={rejectedTasks}
+              icon={XCircle}
+              className="bg-red-500/5 border-red-500/20"
+            />
+          </div>
+
+          {/* Data Table */}
+          <div className="transition-all duration-700 animate-in fade-in slide-in-from-bottom-8">
             <TasksDataTable />
           </div>
-        </main>
+        </div>
       )}
 
       <CreateTaskModal

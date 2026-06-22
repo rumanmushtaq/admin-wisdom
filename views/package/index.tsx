@@ -77,35 +77,44 @@ export default function PackagesPage() {
      RENDER
   ========================== */
   return (
-    // <div className="min-h-screen bg-background p-8 lg:ml-64">
-    //   <div className=" max-w-7xl">
-    <main className="flex-1 w-full lg:ml-64 bg-black">
-      <div className="p-6 lg:p-8">
-        {/* HEADER */}
-        <div className="mb-8 flex items-center justify-between">
-          <div>
+    <main className="flex-1 w-full lg:ml-64 bg-[#020202] min-h-screen selection:bg-primary/30 selection:text-white">
+      <div className="p-8 lg:p-12 max-w-[1400px] mx-auto space-y-12">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+          <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <PackageIcon className="h-8 w-8 text-[#BFFF00]" />
-              <h1 className="text-4xl font-bold text-[#BFFF00]">Packages</h1>
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <PackageIcon className="h-6 w-6 text-primary" />
+              </div>
+              <span className="text-[10px] uppercase tracking-[0.4em] font-black text-primary/60">
+                Monetization Module
+              </span>
             </div>
-            <p className="mt-2 text-muted-foreground">
-              Manage credit packages for your platform
+            <h1 className="text-6xl font-black tracking-tight text-white leading-tight">
+              Store <span className="text-primary">.</span> Packages
+            </h1>
+            <p className="text-muted-foreground/60 max-w-xl text-lg font-medium leading-relaxed">
+              Manage credit packages and pricing structures for your platform.
             </p>
           </div>
 
-          <Button
-            onClick={handleCreate}
-            className="bg-[#BFFF00] text-black hover:bg-[#BFFF00]/90"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Create Package
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={handleCreate}
+              className="h-14 px-8 bg-primary hover:bg-primary/80 text-black font-bold rounded-2xl shadow-[0_0_30px_rgba(209,255,77,0.1)] transition-all"
+            >
+              <Plus className="mr-2 h-5 w-5" />
+              Create Package
+            </Button>
+          </div>
         </div>
 
-        <PackagesDataTable
-          setIsModalOpen={setIsModalOpen}
-          setEditingPackageId={setEditingPackageId}
-        />
+        <div className="transition-all duration-700 animate-in fade-in slide-in-from-bottom-8">
+          <PackagesDataTable
+            setIsModalOpen={setIsModalOpen}
+            setEditingPackageId={setEditingPackageId}
+          />
+        </div>
       </div>
       {/* MODAL */}
       {isModalOpen && (

@@ -22,6 +22,9 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Search,
+  Layers,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,20 +45,29 @@ import {
 } from "@/components/ui/select";
 import { Package } from "@/types/package.types";
 import { useDeletePackage, usePackages } from "@/views/package/usePackage";
+import { cn } from "@/lib/utils";
 
 interface PackagesDataTableProps {
   setIsModalOpen: (a: boolean) => void;
   setEditingPackageId: (a: string) => void;
 }
 
+function SkeletonRow({ cols }: { cols: number }) {
+  return (
+    <TableRow className="border-white/[0.04] hover:bg-transparent">
+      {Array.from({ length: cols }).map((_, i) => (
+        <TableCell key={i} className="py-4 px-5">
+          <div className="h-4 rounded-md bg-white/[0.04] animate-pulse w-3/4" />
+        </TableCell>
+      ))}
+    </TableRow>
+  );
+}
+
 export function PackagesDataTable({
   setIsModalOpen,
   setEditingPackageId,
 }: PackagesDataTableProps) {
-  /* =========================
-       QUERY STATE
-    ========================== */
-  /* -------------------- Filters (GLOBAL STATE) -------------------- */
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
@@ -64,9 +76,6 @@ export function PackagesDataTable({
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  /* =========================
-     FETCH PACKAGES
-  ========================== */
   const { data, packageIsPending } = usePackages({
     page,
     limit,
@@ -76,9 +85,7 @@ export function PackagesDataTable({
     sortOrder,
   });
 
-  console.log("data", data);
   const packages = useMemo(() => data?.data?.data ?? [], [data?.data?.data]);
-  // const totalPages = data?.data?.pagination?.totalPages ?? 1;
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -98,148 +105,147 @@ export function PackagesDataTable({
     () => [
       {
         accessorKey: "displayOrder",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="hover:text-[#BFFF00]"
-            >
-              Order
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: ({ column }) => (
+          <button
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center gap-1.5 group text-[10px] uppercase tracking-[0.2em] font-black text-white/25 hover:text-primary transition-colors"
+          >
+            Order
+            <ArrowUpDown className="h-3 w-3 group-hover:text-primary transition-colors" />
+          </button>
+        ),
+        cell: ({ row }) => (
+          <span className="text-white/40 font-mono text-sm">
+            #{row.getValue("displayOrder")}
+          </span>
+        ),
       },
       {
         accessorKey: "name",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="hover:text-[#BFFF00]"
-            >
-              Name
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: ({ column }) => (
+          <button
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center gap-1.5 group text-[10px] uppercase tracking-[0.2em] font-black text-white/25 hover:text-primary transition-colors"
+          >
+            Name
+            <ArrowUpDown className="h-3 w-3 group-hover:text-primary transition-colors" />
+          </button>
+        ),
+        cell: ({ row }) => (
+          <span className="font-semibold text-white">{row.getValue("name")}</span>
+        ),
       },
       {
         accessorKey: "credits",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="hover:text-[#BFFF00]"
-            >
-              Credits
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
-        cell: ({ row }) => {
-          return (
-            <span className="text-[#BFFF00] font-semibold">
-              {row.getValue("credits")}
-            </span>
-          );
-        },
+        header: ({ column }) => (
+          <button
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center gap-1.5 group text-[10px] uppercase tracking-[0.2em] font-black text-white/25 hover:text-primary transition-colors"
+          >
+            Credits
+            <ArrowUpDown className="h-3 w-3 group-hover:text-primary transition-colors" />
+          </button>
+        ),
+        cell: ({ row }) => (
+          <span className="text-primary font-black font-mono text-sm">
+            {row.getValue("credits")}
+          </span>
+        ),
       },
       {
         accessorKey: "price",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="hover:text-[#BFFF00]"
-            >
-              Price
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: ({ column }) => (
+          <button
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center gap-1.5 group text-[10px] uppercase tracking-[0.2em] font-black text-white/25 hover:text-primary transition-colors"
+          >
+            Price
+            <ArrowUpDown className="h-3 w-3 group-hover:text-primary transition-colors" />
+          </button>
+        ),
         cell: ({ row }) => {
           const price = Number.parseFloat(row.getValue("price"));
-          return <span className="font-semibold">${price.toFixed(2)}</span>;
+          return (
+            <span className="text-white font-bold font-mono">
+              ${price.toFixed(2)}
+            </span>
+          );
         },
       },
       {
         accessorKey: "description",
-        header: "Description",
-        cell: ({ row }) => {
-          const description = row.getValue("description") as string;
-          return (
-            <span className="text-muted-foreground truncate max-w-xs block">
-              {description}
-            </span>
-          );
-        },
+        header: () => (
+          <span className="text-[10px] uppercase tracking-[0.2em] font-black text-white/25">
+            Description
+          </span>
+        ),
+        cell: ({ row }) => (
+          <span className="text-white/40 text-sm truncate max-w-[200px] block">
+            {(row.getValue("description") as string) || "—"}
+          </span>
+        ),
       },
       {
         accessorKey: "isActive",
-        header: "Status",
+        header: () => (
+          <span className="text-[10px] uppercase tracking-[0.2em] font-black text-white/25">
+            Status
+          </span>
+        ),
         cell: ({ row }) => {
-          const isActive = row.getValue("isActive") as boolean;
+          const active = row.getValue("isActive") as boolean;
           return (
             <span
-              className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                isActive
-                  ? "bg-[#BFFF00]/20 text-[#BFFF00]"
-                  : "bg-gray-500/20 text-gray-400"
-              }`}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+                active
+                  ? "bg-primary/15 text-primary border border-primary/30"
+                  : "bg-white/[0.04] text-white/30 border border-white/10"
+              )}
             >
-              {isActive ? "Active" : "Inactive"}
+              <span
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  active ? "bg-primary" : "bg-white/20"
+                )}
+              />
+              {active ? "Active" : "Inactive"}
             </span>
           );
         },
       },
       {
         id: "actions",
-        header: "Actions",
-        cell: ({ row }) => {
-          return (
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:text-[#BFFF00]"
-                onClick={() => {
-                  if (row?.original?._id) {
-                    handleToEdit(row?.original?._id);
-                  }
-                }}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:text-red-500"
-                onClick={() =>
-                  row?.original?._id &&
-                  deleteMutation.mutate(row?.original?._id)
-                }
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          );
-        },
+        header: () => (
+          <span className="text-[10px] uppercase tracking-[0.2em] font-black text-white/25">
+            Actions
+          </span>
+        ),
+        cell: ({ row }) => (
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-lg text-white/20 hover:text-primary hover:bg-primary/10 transition-all"
+              onClick={() => row?.original?._id && handleToEdit(row.original._id)}
+            >
+              <Edit className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-all"
+              onClick={() =>
+                row?.original?._id && deleteMutation.mutate(row.original._id)
+              }
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        ),
       },
     ],
-    [deleteMutation],
+    [deleteMutation]
   );
 
   const table = useReactTable({
@@ -252,28 +258,29 @@ export function PackagesDataTable({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onPaginationChange: setPagination,
-    state: {
-      sorting,
-      columnFilters,
-      pagination,
-    },
+    state: { sorting, columnFilters, pagination },
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Input
-          placeholder="Search by name..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm neon-border bg-black/30"
-        />
+    <div className="space-y-6">
+      {/* ── Filter Bar ─────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+          <Input
+            placeholder="Search packages…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 h-11 bg-white/[0.03] border-white/[0.07] text-white placeholder:text-white/20 rounded-xl focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
+          />
+        </div>
+
         <Select value={isActive} onValueChange={setIsActive}>
-          <SelectTrigger className="w-[180px] neon-border bg-black/30">
-            <SelectValue placeholder="Filter by status" />
+          <SelectTrigger className="h-11 w-[160px] bg-white/[0.03] border-white/[0.07] text-white/60 rounded-xl focus:border-primary/50">
+            <SelectValue placeholder="Status" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
+          <SelectContent className="bg-[#0d0d0d] border-white/10 rounded-xl">
+            <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="true">Active</SelectItem>
             <SelectItem value="false">Inactive</SelectItem>
           </SelectContent>
@@ -281,66 +288,70 @@ export function PackagesDataTable({
 
         <Select
           value={sortOrder}
-          onValueChange={(value) => setSortOrder(value as "asc" | "desc")}
+          onValueChange={(v) => setSortOrder(v as "asc" | "desc")}
         >
-          <SelectTrigger className="w-[180px] neon-border bg-black/30">
-            <SelectValue placeholder="Filter by status" />
+          <SelectTrigger className="h-11 w-[140px] bg-white/[0.03] border-white/[0.07] text-white/60 rounded-xl focus:border-primary/50">
+            <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="asc">ASC</SelectItem>
-            <SelectItem value="desc">DESC</SelectItem>
+          <SelectContent className="bg-[#0d0d0d] border-white/10 rounded-xl">
+            <SelectItem value="desc">Newest First</SelectItem>
+            <SelectItem value="asc">Oldest First</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="rounded-lg border border-[#BFFF00]/30 bg-black/30 backdrop-blur-sm">
+      {/* ── Table ──────────────────────────────────── */}
+      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
-                className="border-[#BFFF00]/20 hover:bg-[#BFFF00]/5"
+                className="border-white/[0.06] hover:bg-transparent"
               >
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} className="text-[#BFFF00]">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className="py-4 px-5">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+            {packageIsPending ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <SkeletonRow key={i} cols={columns.length} />
+              ))
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row, idx) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="border-[#BFFF00]/10 hover:bg-[#BFFF00]/5"
+                  className={cn(
+                    "border-white/[0.04] transition-all duration-150 group",
+                    "hover:bg-primary/[0.04] hover:border-primary/10",
+                    idx % 2 === 0 ? "bg-transparent" : "bg-white/[0.01]"
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                    <TableCell key={cell.id} className="py-3.5 px-5">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
+              <TableRow className="border-0 hover:bg-transparent">
+                <TableCell colSpan={columns.length}>
+                  <div className="flex flex-col items-center justify-center py-20 text-white/10">
+                    <Layers className="h-12 w-12 mb-4 stroke-[1px]" />
+                    <p className="text-lg font-black uppercase tracking-[0.2em]">No Packages</p>
+                    <p className="text-sm font-medium mt-1 text-white/20">
+                      Create your first package to get started.
+                    </p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
@@ -348,86 +359,92 @@ export function PackagesDataTable({
         </Table>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-muted-foreground">
+      {/* ── Pagination ─────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-1">
+        <div className="flex items-center gap-3">
+          <p className="text-xs text-white/25 font-mono">
             Showing{" "}
-            {table.getState().pagination.pageIndex *
-              table.getState().pagination.pageSize +
-              1}{" "}
-            to{" "}
-            {Math.min(
-              (table.getState().pagination.pageIndex + 1) *
-                table.getState().pagination.pageSize,
-              table.getFilteredRowModel().rows.length,
-            )}{" "}
-            of {table.getFilteredRowModel().rows.length} entries
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              Rows per page:
+            <span className="text-white/50">
+              {table.getState().pagination.pageIndex *
+                table.getState().pagination.pageSize + 1}
             </span>
-            <Select
-              value={table.getState().pagination.pageSize.toString()}
-              onValueChange={(value) => {
-                table.setPageSize(Number(value));
-              }}
-            >
-              <SelectTrigger className="h-8 w-16 neon-border">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[5, 10, 20, 50].map((pageSize) => (
-                  <SelectItem key={pageSize} value={pageSize.toString()}>
-                    {pageSize}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            {" – "}
+            <span className="text-white/50">
+              {Math.min(
+                (table.getState().pagination.pageIndex + 1) *
+                  table.getState().pagination.pageSize,
+                table.getFilteredRowModel().rows.length
+              )}
+            </span>{" "}
+            of{" "}
+            <span className="text-primary font-black">
+              {table.getFilteredRowModel().rows.length}
+            </span>{" "}
+            entries
+          </p>
+
+          <Select
+            value={table.getState().pagination.pageSize.toString()}
+            onValueChange={(v) => table.setPageSize(Number(v))}
+          >
+            <SelectTrigger className="h-8 w-[90px] bg-white/[0.03] border-white/[0.07] text-white/40 rounded-lg text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-[#0d0d0d] border-white/10 rounded-xl">
+              {[5, 10, 20, 50].map((s) => (
+                <SelectItem key={s} value={s.toString()}>
+                  {s} rows
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex items-center gap-1.5">
           <Button
-            variant="outline"
-            size="sm"
+            variant="ghost"
+            size="icon"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
-            className="neon-border h-8 w-8 p-0"
+            className="h-9 w-9 rounded-xl border border-white/[0.07] text-white/30 hover:text-primary hover:border-primary/30 hover:bg-primary/10 disabled:opacity-20 transition-all"
           >
             <ChevronsLeft className="h-4 w-4" />
           </Button>
           <Button
-            variant="outline"
-            size="sm"
+            variant="ghost"
+            size="icon"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="neon-border"
+            className="h-9 w-9 rounded-xl border border-white/[0.07] text-white/30 hover:text-primary hover:border-primary/30 hover:bg-primary/10 disabled:opacity-20 transition-all"
           >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Previous
+            <ChevronLeft className="h-4 w-4" />
           </Button>
-          <div className="flex items-center gap-1">
-            <span className="text-sm text-muted-foreground">
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
+
+          <div className="flex items-center px-3">
+            <span className="text-xs font-mono text-white/25">
+              Page{" "}
+              <span className="text-primary font-black">
+                {table.getState().pagination.pageIndex + 1}
+              </span>{" "}
+              / {table.getPageCount()}
             </span>
           </div>
+
           <Button
-            variant="outline"
-            size="sm"
+            variant="ghost"
+            size="icon"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="neon-border"
+            className="h-9 w-9 rounded-xl border border-white/[0.07] text-white/30 hover:text-primary hover:border-primary/30 hover:bg-primary/10 disabled:opacity-20 transition-all"
           >
-            Next
-            <ChevronRight className="h-4 w-4 ml-1" />
+            <ChevronRight className="h-4 w-4" />
           </Button>
           <Button
-            variant="outline"
-            size="sm"
+            variant="ghost"
+            size="icon"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
-            className="neon-border h-8 w-8 p-0"
+            className="h-9 w-9 rounded-xl border border-white/[0.07] text-white/30 hover:text-primary hover:border-primary/30 hover:bg-primary/10 disabled:opacity-20 transition-all"
           >
             <ChevronsRight className="h-4 w-4" />
           </Button>

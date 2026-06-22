@@ -16,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,7 +25,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MoreVertical, Eye, Trash2, ArchiveRestore } from "lucide-react";
+import {
+  MoreVertical,
+  Eye,
+  Trash2,
+  ArchiveRestore,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Layers,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,8 +53,45 @@ import {
   useToggleUserVerified,
 } from "@/views/users/useUsers";
 import { Switch } from "./ui/switch";
+import { cn } from "@/lib/utils";
 
-/* -------------------- Cell Components -------------------- */
+/* ─────────────────────────────────────────
+   Helpers
+───────────────────────────────────────── */
+function UserAvatar({ name }: { name: string }) {
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
+  return (
+    <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary text-xs font-black tracking-wider flex-shrink-0">
+      {initials || "?"}
+    </div>
+  );
+}
+
+function RoleBadge({ role }: { role: string }) {
+  const isAdmin = role?.toLowerCase() === "admin";
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest",
+        isAdmin
+          ? "bg-primary/15 text-primary border border-primary/30"
+          : "bg-white/5 text-white/40 border border-white/10"
+      )}
+    >
+      {role}
+    </span>
+  );
+}
+
+/* ─────────────────────────────────────────
+   Cell Components
+───────────────────────────────────────── */
 type ToggleCellProps = {
   user: any;
   field: "isActive" | "isDeleted" | "isVerified";
@@ -53,19 +100,12 @@ type ToggleCellProps = {
 
 function ToggleCell({ user, field, mutationHook }: ToggleCellProps) {
   const mutation = mutationHook();
-
-  const handleChange = (val: boolean) => {
-    mutation.mutate({ id: user._id, [field]: val });
-  };
-
   return (
-    <div>
-      <Switch
-        checked={user[field]}
-        onCheckedChange={handleChange}
-        disabled={mutation.isPending}
-      />
-    </div>
+    <Switch
+      checked={user[field]}
+      onCheckedChange={(val) => mutation.mutate({ id: user._id, [field]: val })}
+      disabled={mutation.isPending}
+    />
   );
 }
 
@@ -79,33 +119,41 @@ function ActionsCell({
   const deleteUser = useDeleteUser();
   const restoreUser = useRestoreUser();
 
-  const handleDelete = () => {
-    deleteUser.mutate({ id: user._id });
-  };
-
-  const handleRestore = () => {
-    restoreUser.mutate({ id: user._id });
-  };
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 rounded-lg text-white/30 hover:text-primary hover:bg-primary/10 transition-all"
+        >
           <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onViewProfile(user)}>
+      <DropdownMenuContent
+        align="end"
+        className="bg-[#0d0d0d] border border-white/10 rounded-xl shadow-2xl shadow-black/50 p-1"
+      >
+        <DropdownMenuItem
+          onClick={() => onViewProfile(user)}
+          className="rounded-lg text-white/70 hover:text-primary hover:bg-primary/10 cursor-pointer"
+        >
           <Eye className="mr-2 h-4 w-4" />
           View Profile
         </DropdownMenuItem>
         {user.isDeleted ? (
-          <DropdownMenuItem onClick={handleRestore}>
+          <DropdownMenuItem
+            onClick={() => restoreUser.mutate({ id: user._id })}
+            className="rounded-lg text-green-400 hover:text-green-300 hover:bg-green-500/10 cursor-pointer"
+          >
             <ArchiveRestore className="mr-2 h-4 w-4" />
             Restore User
           </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem onClick={handleDelete}>
+          <DropdownMenuItem
+            onClick={() => deleteUser.mutate({ id: user._id })}
+            className="rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+          >
             <Trash2 className="mr-2 h-4 w-4" />
             Delete User
           </DropdownMenuItem>
@@ -115,8 +163,25 @@ function ActionsCell({
   );
 }
 
+/* ─────────────────────────────────────────
+   Skeleton Row
+───────────────────────────────────────── */
+function SkeletonRow({ cols }: { cols: number }) {
+  return (
+    <TableRow className="border-white/[0.04] hover:bg-transparent">
+      {Array.from({ length: cols }).map((_, i) => (
+        <TableCell key={i}>
+          <div className="h-4 rounded-md bg-white/[0.04] animate-pulse w-3/4" />
+        </TableCell>
+      ))}
+    </TableRow>
+  );
+}
+
+/* ─────────────────────────────────────────
+   Main Component
+───────────────────────────────────────── */
 export function UserTable() {
-  /* -------------------- Filters (GLOBAL STATE) -------------------- */
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
@@ -125,16 +190,8 @@ export function UserTable() {
   const [isVerified, setIsVerified] = useState<string | undefined>();
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  /* -------------------- Handlers -------------------- */
-  const handleViewProfile = (user: any) => {
-    setSelectedUser(user._id);
-  };
-
-  /* -------------------- API -------------------- */
   const { data, isLoading } = useGetUsers({
     page,
     limit,
@@ -149,60 +206,47 @@ export function UserTable() {
   const users = data?.data?.data ?? [];
   const totalPages = data?.data?.pagination?.totalPages ?? 1;
 
-  /* -------------------- Columns -------------------- */
   const columns = useMemo<ColumnDef<any>[]>(
     () => [
       {
         accessorKey: "name",
         header: "User",
-        cell: ({ row }) => (
-          <div className="flex">
-            <p className="font-medium">
-              {row.original?.firstName} {row.original?.lastName}
-            </p>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "email",
-        header: "Email",
-        cell: ({ row }) => (
-          <div>
-            <p className="text-sm text-muted-foreground">
-              {row.original.email}
-            </p>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const fullName = `${row.original?.firstName ?? ""} ${row.original?.lastName ?? ""}`.trim();
+          return (
+            <div className="flex items-center gap-3">
+              <UserAvatar name={fullName} />
+              <div>
+                <p className="font-semibold text-white text-sm">{fullName || "—"}</p>
+                <p className="text-[11px] text-white/30 font-mono mt-0.5">
+                  {row.original?.email}
+                </p>
+              </div>
+            </div>
+          );
+        },
       },
       {
         accessorKey: "role",
         header: "Role",
-        cell: ({ row }) => (
-          <div>
-            <p className="text-sm text-muted-foreground">{row.original.role}</p>
-          </div>
-        ),
+        cell: ({ row }) => <RoleBadge role={row.original.role} />,
       },
       {
         accessorKey: "credits",
         header: "Credits",
         cell: ({ row }) => (
-          <div>
-            <p className="text-sm text-muted-foreground">
-              {Number(row.original.credits).toFixed(2)}
-            </p>
-          </div>
+          <span className="text-primary font-black font-mono text-sm">
+            {Number(row.original.credits).toFixed(2)}
+          </span>
         ),
       },
       {
         accessorKey: "totalEarnings",
         header: "Earnings",
         cell: ({ row }) => (
-          <div>
-            <p className="text-sm text-muted-foreground">
-              {row.original.totalEarnings}
-            </p>
-          </div>
+          <span className="text-white/60 font-mono text-sm">
+            {row.original.totalEarnings ?? "—"}
+          </span>
         ),
       },
       {
@@ -223,9 +267,7 @@ export function UserTable() {
           <ToggleCell
             user={row.original}
             field="isDeleted"
-            mutationHook={
-              row.original.isDeleted ? useRestoreUser : useDeleteUser
-            }
+            mutationHook={row.original.isDeleted ? useRestoreUser : useDeleteUser}
           />
         ),
       },
@@ -240,32 +282,19 @@ export function UserTable() {
           />
         ),
       },
-      // {
-      //   accessorKey: "isVerified",
-      //   header: "Verified",
-      //   cell: ({ row }) => {
-      //     const isVerified = row.original.isVerified;
-      //     return (
-      //       <Badge
-      //         variant={isVerified ? "default" : "outline"}
-      //         className="px-2 py-1"
-      //       >
-      //         {isVerified ? "Verified" : "Not Verified"}
-      //       </Badge>
-      //     );
-      //   },
-      // },
       {
         header: "Actions",
         cell: ({ row }) => (
-          <ActionsCell user={row.original} onViewProfile={handleViewProfile} />
+          <ActionsCell
+            user={row.original}
+            onViewProfile={(u) => setSelectedUser(u._id)}
+          />
         ),
       },
     ],
-    [], // No dependencies needed since handleViewProfile is stable
+    []
   );
 
-  /* -------------------- Table -------------------- */
   const table = useReactTable({
     data: users,
     columns,
@@ -274,97 +303,172 @@ export function UserTable() {
     pageCount: totalPages,
   });
 
-  /* -------------------- UI -------------------- */
   return (
-    <div className="space-y-4">
-      {/* Search */}
-      <Input
-        placeholder="Search users..."
-        value={search}
-        onChange={(e) => {
-          setPage(1);
-          setSearch(e.target.value);
-        }}
-      />
+    <div className="space-y-6">
+      {/* ── Filter Bar ─────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+          <Input
+            placeholder="Search users by name or email…"
+            value={search}
+            onChange={(e) => { setPage(1); setSearch(e.target.value); }}
+            className="pl-9 h-11 bg-white/[0.03] border-white/[0.07] text-white placeholder:text-white/20 rounded-xl focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
+          />
+        </div>
 
-      {/* Table */}
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((hg) => (
-            <TableRow key={hg.id}>
-              {hg.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
+        <Select value={isActive ?? "all"} onValueChange={(v) => setIsActive(v === "all" ? undefined : v)}>
+          <SelectTrigger className="h-11 w-[160px] bg-white/[0.03] border-white/[0.07] text-white/60 rounded-xl focus:border-primary/50">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#0d0d0d] border-white/10 rounded-xl">
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="true">Active</SelectItem>
+            <SelectItem value="false">Inactive</SelectItem>
+          </SelectContent>
+        </Select>
 
-        <TableBody>
-          {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={columns.length}>Loading...</TableCell>
-            </TableRow>
-          ) : (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-
-      {/* Pagination */}
-      <div className="flex justify-between items-center">
-        <Button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-          Previous
-        </Button>
-
-        <span>
-          Page {page} of {totalPages}
-        </span>
-
-        <Button
-          disabled={page === totalPages}
-          onClick={() => setPage((p) => p + 1)}
-        >
-          Next
-        </Button>
-
-        <Select
-          value={String(limit)}
-          onValueChange={(v) => {
-            setPage(1);
-            setLimit(Number(v));
-          }}
-        >
-          <SelectTrigger className="w-[80px]">
+        <Select value={limit.toString()} onValueChange={(v) => { setPage(1); setLimit(Number(v)); }}>
+          <SelectTrigger className="h-11 w-[120px] bg-white/[0.03] border-white/[0.07] text-white/60 rounded-xl focus:border-primary/50">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-[#0d0d0d] border-white/10 rounded-xl">
             {[10, 20, 50].map((v) => (
-              <SelectItem key={v} value={String(v)}>
-                {v}
-              </SelectItem>
+              <SelectItem key={v} value={v.toString()}>{v} / page</SelectItem>
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      {/* ── Table ──────────────────────────────────── */}
+      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm overflow-hidden">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((hg) => (
+              <TableRow key={hg.id} className="border-white/[0.06] hover:bg-transparent">
+                {hg.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="text-[10px] uppercase tracking-[0.2em] font-black text-white/25 py-4 px-5"
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonRow key={i} cols={columns.length} />
+              ))
+            ) : table.getRowModel().rows.length === 0 ? (
+              <TableRow className="border-0 hover:bg-transparent">
+                <TableCell colSpan={columns.length}>
+                  <div className="flex flex-col items-center justify-center py-20 text-white/10">
+                    <Layers className="h-12 w-12 mb-4 stroke-[1px]" />
+                    <p className="text-lg font-black uppercase tracking-[0.2em]">Void</p>
+                    <p className="text-sm font-medium mt-1 text-white/20">No users match your filters.</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              table.getRowModel().rows.map((row, idx) => (
+                <TableRow
+                  key={row.id}
+                  className={cn(
+                    "border-white/[0.04] transition-all duration-150 group",
+                    "hover:bg-primary/[0.04] hover:border-primary/10",
+                    idx % 2 === 0 ? "bg-transparent" : "bg-white/[0.01]"
+                  )}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="py-3.5 px-5">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* ── Pagination ─────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-1">
+        <p className="text-xs text-white/25 font-mono">
+          Page <span className="text-primary font-black">{page}</span> of{" "}
+          <span className="text-white/40">{totalPages}</span>
+        </p>
+
+        <div className="flex items-center gap-1.5">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setPage(1)}
+            disabled={page === 1}
+            className="h-9 w-9 rounded-xl border border-white/[0.07] text-white/30 hover:text-primary hover:border-primary/30 hover:bg-primary/10 disabled:opacity-20 transition-all"
+          >
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="h-9 w-9 rounded-xl border border-white/[0.07] text-white/30 hover:text-primary hover:border-primary/30 hover:bg-primary/10 disabled:opacity-20 transition-all"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+
+          {/* Page pills */}
+          {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+            const p = i + 1;
+            return (
+              <Button
+                key={p}
+                variant="ghost"
+                size="icon"
+                onClick={() => setPage(p)}
+                className={cn(
+                  "h-9 w-9 rounded-xl border text-xs font-black transition-all",
+                  page === p
+                    ? "border-primary/50 bg-primary/10 text-primary"
+                    : "border-white/[0.07] text-white/20 hover:text-primary hover:border-primary/30 hover:bg-primary/10"
+                )}
+              >
+                {p}
+              </Button>
+            );
+          })}
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="h-9 w-9 rounded-xl border border-white/[0.07] text-white/30 hover:text-primary hover:border-primary/30 hover:bg-primary/10 disabled:opacity-20 transition-all"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setPage(totalPages)}
+            disabled={page === totalPages}
+            className="h-9 w-9 rounded-xl border border-white/[0.07] text-white/30 hover:text-primary hover:border-primary/30 hover:bg-primary/10 disabled:opacity-20 transition-all"
+          >
+            <ChevronsRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       {selectedUser && (
         <UserProfileModal
           open={Boolean(selectedUser)}
           onOpenChange={() => setSelectedUser(null)}
-          user={selectedUser as string}
+          user={selectedUser}
         />
       )}
     </div>
